@@ -23,7 +23,7 @@ public class UserEntity {
     }
 
     @Basic
-    @Column(name = "firstName", nullable = false, length = 100)
+    @Column(name = "first_name", nullable = false, length = 100)
     public String getFirstName() {
         return firstName;
     }
@@ -33,7 +33,7 @@ public class UserEntity {
     }
 
     @Basic
-    @Column(name = "lastName", nullable = false, length = 100)
+    @Column(name = "last_name", nullable = false, length = 100)
     public String getLastName() {
         return lastName;
     }
@@ -43,7 +43,7 @@ public class UserEntity {
     }
 
     @Basic
-    @Column(name = "birthDay", nullable = false)
+    @Column(name = "birth_day", nullable = false)
     public Date getBirthDay() {
         return birthDay;
     }
@@ -77,7 +77,7 @@ public class UserEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "fkPosition", referencedColumnName = "idPosition", nullable = false)
+    @JoinColumn(name = "fk_position", referencedColumnName = "id_position", nullable = false)
     public PositionEntity getPositionByFkPosition() {
         return positionByFkPosition;
     }

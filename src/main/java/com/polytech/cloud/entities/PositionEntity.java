@@ -10,7 +10,7 @@ public class PositionEntity {
     private double lon;
 
     @Id
-    @Column(name = "idPosition", nullable = false)
+    @Column(name = "id_position", nullable = false)
     public int getIdPosition() {
         return idPosition;
     }
