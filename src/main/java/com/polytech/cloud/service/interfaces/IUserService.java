@@ -1,4 +1,12 @@
 package com.polytech.cloud.service.interfaces;
 
-public class IUserService {
+import com.polytech.cloud.entities.UserEntity;
+
+import java.util.List;
+
+public interface IUserService {
+
+    List<UserEntity> findAllUsers();
+
+    UserEntity findByIdUser(String id);
 }
