@@ -77,12 +77,25 @@ public class UserEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "fk_position", referencedColumnName = "id_position", nullable = false)
+    @JoinColumns(@JoinColumn(name = "fk_position", referencedColumnName = "id_position", nullable = false))
     public PositionEntity getPositionByFkPosition() {
         return positionByFkPosition;
     }
 
     public void setPositionByFkPosition(PositionEntity positionByFkPosition) {
         this.positionByFkPosition = positionByFkPosition;
+    }
+
+
+    @Override
+    public String toString()
+    {
+        return "UserEntity{" +
+                "id='" + id + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", birthDay=" + birthDay +
+                ", positionByFkPosition=" + positionByFkPosition +
+                '}';
     }
 }

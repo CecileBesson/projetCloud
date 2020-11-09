@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface IUserService {
 
-    List<UserEntity> findAllUsers();
+    public List<UserEntity> findAllUsers();
 
-    UserEntity findByIdUser(String id);
+    public serEntity findByIdUser(String id);
+    
+    public void saveAllRandomUsersToDatabase() throws IOException, IncorrectlyFormedUserException;
 }
