@@ -2,15 +2,91 @@ package com.polytech.cloud.controller;
 
 import com.polytech.cloud.entities.UserEntity;
 import com.polytech.cloud.service.implementation.UserService;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import com.polytech.cloud.exceptions.IncorrectlyFormedUserException;
+import com.polytech.cloud.responses.*;
+import com.polytech.cloud.service.implementation.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+
+import static com.polytech.cloud.utils.ControllerExceptionBuilder.buildErrorResponseAndPrintStackTrace;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
-    private UserService userService;
+    //todo : GET /user -> retourne tous les utilisateurs
+    // PUT /user -> permet de remplacer la collection entière par une nouvelle liste d'utilisateur
+    // DELETE /user -> supprime toute la collection des utilisateurs
+    //attention au codes retour http.
+
+    //todo : GET /user/{id} -> retourne l'utilisateur correspondant
+    // POST /user -> ajoute un nouvel utilisateur passé en paramètre
+    // PUT /user/{id} -> met à jour l'utilisateur
+    // DELETE /user/{id} -> supprime l'utilisateur correspondant
+
+
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService service){
+        this.userService = service;
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<List<UserEntity>> getAllUsers() {
+        return new ResponseEntity<List<UserEntity>>(this.userService.findAllUsers(), HttpStatus.OK);
+    }
+
+    /**
+     * Retrieve a user by his id
+     * @param id users id
+     * @return a specific user
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public ResponseEntity<UserEntity> getAUser(
+            @PathVariable String id) {
+        return new ResponseEntity<UserEntity>(this.userService.findByIdUser(id), HttpStatus.OK);
+    }
+
+
+    /**
+     * This operation is destructive. It removes all users and adds random ones into the database.
+     * @return
+     * @throws IOException
+     * @throws IncorrectlyFormedUserException
+     */
+    @RequestMapping(value ="/dev/insert-random", method = RequestMethod.PUT)
+    public ResponseEntity<ApiResponse> saveRandomUsersToDatabase() throws IOException, IncorrectlyFormedUserException {
+        this.userService.saveAllRandomUsersToDatabase();
+
+        Success success = new Success(HttpStatus.OK, "Random users were inserted into the database");
+        return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
+    }
+
+
+
+    @ExceptionHandler(IOException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    private ResponseEntity<ApiResponse> inOutException(IOException ex){
+        return buildErrorResponseAndPrintStackTrace(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong while reading files", ex);
+    }
+
+    @ExceptionHandler(IncorrectlyFormedUserException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    private ResponseEntity<ApiResponse> inOutException(IncorrectlyFormedUserException ex){
+        return buildErrorResponseAndPrintStackTrace(HttpStatus.INTERNAL_SERVER_ERROR, "One the users provided in the data.json classpath resource file was incorrectly formed.", ex);
+    }
+
 
     /**
      * Creates a new user.
@@ -30,9 +106,9 @@ public class UserController {
      * @param user the user to update
      * @return no content http response
      */
-    @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateUser(@RequestBody UserEntity user) {
-        this.userService.updateUser(user.getId(), user);
+    @PutMapping(value = "/{id}")
+    public ResponseEntity updateUser(@RequestBody UserEntity user, @PathVariable String id) {
+        this.userService.updateUser(id, user);
         return ResponseEntity.noContent().build();
     }
 
