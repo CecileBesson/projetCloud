@@ -2,7 +2,7 @@ image: maven:3-openjdk-8
 stages:
   - build
   - sonarqube-check
-  - - test-eval-cli
+  - test-eval-cli
 
 sonarqube-check:
   stage: sonarqube-check
@@ -14,8 +14,9 @@ sonarqube-check:
     key: "${CI_JOB_NAME}"
     paths:
       - .sonar/cache
-  #only:
-   # - main
+  only:
+    - main
+    - merge_requests
   script:
     - mvn verify sonar:sonar -Dsonar.qualitygate.wait=true
   allow_failure: true
