@@ -2,6 +2,7 @@ package com.polytech.cloud.io;
 
 import com.polytech.cloud.entities.UserEntity;
 import com.polytech.cloud.exceptions.IncorrectlyFormedUserException;
+import com.polytech.cloud.io.UsersReader;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -12,8 +13,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @RunWith(SpringJUnit4ClassRunner.class)
