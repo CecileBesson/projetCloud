@@ -5,6 +5,7 @@ import com.polytech.cloud.exceptions.*;
 import com.polytech.cloud.responses.Error;
 import com.polytech.cloud.service.implementation.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class UserController {
     }
 
     // GET /
-    @RequestMapping(method = RequestMethod.GET)
+   @RequestMapping(value="/all", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<List<UserEntity>> getAllUsers() {
         // todo : performance will need to be increased as soon as we can.
@@ -62,6 +63,18 @@ public class UserController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
+
+
+    //PAGINATION
+    @RequestMapping(method = RequestMethod.GET /*, params= {"pageNo","pageSize"}*/)
+    public ResponseEntity<List<UserEntity>> getUsersByPage(
+            @RequestParam(defaultValue = "0") Integer pageNo,
+            @RequestParam(defaultValue = "100") Integer pageSize)
+    {
+
+        return new ResponseEntity<List<UserEntity>>(this.userService.getUsers(pageNo, pageSize), HttpStatus.OK);
+    }
+
 
     // DELETE /
     @RequestMapping(method = RequestMethod.DELETE)

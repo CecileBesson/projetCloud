@@ -6,12 +6,18 @@ import com.polytech.cloud.io.UsersReader;
 import com.polytech.cloud.repository.*;
 import com.polytech.cloud.service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -183,4 +189,21 @@ public class UserService implements IUserService {
         return userRepository.findById(id);
     }
 
+    /**
+     * Get 100 first users corresponding to the page number
+     *
+     * @param pageNo
+     * @param pageSize
+     * @return the users corresponding to the page number
+     */
+    public List<UserEntity> getUsers(Integer pageNo, Integer pageSize) {
+        Pageable paging =  PageRequest.of(pageNo, pageSize);
+        Page<UserEntity> pagedResult = userRepository.findAll(paging);
+
+        if(pagedResult.hasContent()) {
+            return pagedResult.getContent();
+        } else {
+            return new ArrayList<UserEntity>();
+        }
+    }
 }
