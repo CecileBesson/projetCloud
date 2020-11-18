@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @RunWith(SpringJUnit4ClassRunner.class)
 @AutoConfigureTestDatabase
-class UsersReaderTest {
+public class UsersReaderTest {
 
     @Autowired
     UsersReader reader;
