@@ -97,4 +97,18 @@
 	</build>
 
 
+	<profiles>
+		<profile>
+			<id>prod</id>
+		</profile>
+
+		<profile>
+			<id>dev</id>
+		</profile>
+
+		<profile>
+			<id>test</id>
+		</profile>
+	</profiles>
+
 </project>
