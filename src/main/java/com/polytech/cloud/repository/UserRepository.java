@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             nativeQuery = true)
     public void resetAutoIncrementSeed();
 
+    void deleteAllById(int id);
+
 }

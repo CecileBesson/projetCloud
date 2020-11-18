@@ -6,16 +6,13 @@ import com.polytech.cloud.responses.Error;
 import com.polytech.cloud.service.implementation.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 import com.polytech.cloud.responses.*;
-import com.polytech.cloud.service.implementation.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -74,6 +71,18 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Delete a user by his id.
+     * @param id  user id.
+     * @return
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<ApiResponse> deleteUserById(@PathVariable int id) {
+        this.userService.deleteAUserById(id);
+        Success success = new Success(HttpStatus.OK, "The user n°" + id + " has been correctly deleted.");
+        return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
+    }
+
 
     /**
      * PUT/
@@ -124,6 +133,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+
     /**
      * This operation is destructive. It removes all users and adds random ones into the database.
      *
@@ -141,8 +151,6 @@ public class UserController {
     }
 
     /* Exception handlers */
-
-
     @ExceptionHandler(IOException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -14,6 +14,8 @@ public interface IUserService {
     public List<UserEntity> findAllUsers();
 
     public UserEntity findByIdUser(int id);
+
+    void deleteAUserById(int id);
     
     public void saveAllRandomUsersToDatabase() throws IOException, IncorrectlyFormedUserException, IOException, IncorrectlyFormedUserException;
 
