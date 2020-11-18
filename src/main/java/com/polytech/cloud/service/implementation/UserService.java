@@ -74,6 +74,9 @@ public class UserService implements IUserService {
     }
 
     private void checkIfUserIsCorrectlyFormed(UserEntity ue) throws IncorrectlyFormedUserException {
+        if (ue == null || ue.getPositionByFkPosition() == null) {
+            throw new IncorrectlyFormedUserException("Some of the users fields are null or valid");
+        }
 
         BigDecimal lat = ue.getPositionByFkPosition().getLat();
         BigDecimal lon = ue.getPositionByFkPosition().getLon();
