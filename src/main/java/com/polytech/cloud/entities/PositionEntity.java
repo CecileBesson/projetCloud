@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity
-@Table(name = "position", schema = "cloud_equipe_e", catalog = "")
+@Table(name = "position", catalog = "")
 public class PositionEntity {
     private int idPosition;
     private BigDecimal lat;

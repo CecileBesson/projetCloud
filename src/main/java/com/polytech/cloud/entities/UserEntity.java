@@ -8,7 +8,7 @@ import java.sql.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "user", schema = "cloud_equipe_e", catalog = "")
+@Table(name = "user", catalog = "")
 public class UserEntity {
 
     private int id;
