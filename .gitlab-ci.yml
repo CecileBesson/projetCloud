@@ -12,7 +12,7 @@ unit_test:
 fonctional_test:
   stage: test
   script:
-    - echo "test fonctionnel is being lanch"
+    - mvn test
 
 build:
   stage: build
