@@ -1,25 +1,24 @@
 package com.polytech.cloud.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity
-@Table(name = "position", schema = "cloud-equipe-e", catalog = "")
+@Table(name = "position", catalog = "")
 public class PositionEntity {
     private int idPosition;
     private BigDecimal lat;
     private BigDecimal lon;
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_position", nullable = false)
     public int getIdPosition() {
         return idPosition;
-    }
-
-    public void setIdPosition(int idPosition) {
-        this.idPosition = idPosition;
     }
 
     @Basic
@@ -28,9 +27,6 @@ public class PositionEntity {
         return lat;
     }
 
-    public void setLat(BigDecimal lat) {
-        this.lat = lat;
-    }
 
     @Basic
     @Column(name = "lon", nullable = false, precision = 0)
@@ -41,6 +37,15 @@ public class PositionEntity {
     public void setLon(BigDecimal lon) {
         this.lon = lon;
     }
+
+    public void setIdPosition(int idPosition) {
+        this.idPosition = idPosition;
+    }
+
+    public void setLat(BigDecimal lat) {
+        this.lat = lat;
+    }
+
 
     @Override
     public boolean equals(Object o)
