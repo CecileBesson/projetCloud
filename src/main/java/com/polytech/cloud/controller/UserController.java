@@ -87,4 +87,29 @@ public class UserController {
         return buildErrorResponseAndPrintStackTrace(HttpStatus.INTERNAL_SERVER_ERROR, "One the users provided in the data.json classpath resource file was incorrectly formed.", ex);
     }
 
+
+    /**
+     * Creates a new user.
+     *
+     * @param user the user to create
+     * @return no content http response
+     */
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity createUser(@RequestBody UserEntity user) {
+        this.userService.createUser(user);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Updates the current user.
+     *
+     * @param user the user to update
+     * @return no content http response
+     */
+    @PutMapping(value = "/{id}")
+    public ResponseEntity updateUser(@RequestBody UserEntity user, @PathVariable String id) {
+        this.userService.updateUser(id, user);
+        return ResponseEntity.noContent().build();
+    }
+
 }
