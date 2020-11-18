@@ -30,7 +30,7 @@ public class UsersReaderTest {
      * See https://github.com/Slashgear/cloud-random-user
      */
     @Test
-    void getUsersEntityListFromResourceFile() throws IOException, IncorrectlyFormedUserException {
+    public void getUsersEntityListFromResourceFile() throws IOException, IncorrectlyFormedUserException {
         List<UserEntity> users = reader.getUsersEntityListFromResourceFile();
         // 300 users were generated with the
         Assert.assertEquals(5000, users.size());
