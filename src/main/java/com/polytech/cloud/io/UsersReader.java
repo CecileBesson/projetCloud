@@ -8,10 +8,14 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class UsersReader {
@@ -27,7 +31,8 @@ public class UsersReader {
         List<UserEntity> usersList = new ArrayList<UserEntity>();
 
         JsonParser parser = new JsonParser();
-        Reader reader = new FileReader(this.usersJson.getFile());
+        InputStream inputStream = this.usersJson.getInputStream();
+        Reader reader = new InputStreamReader(inputStream);
 
         JsonArray allUsers = (JsonArray) parser.parse(reader);
 
