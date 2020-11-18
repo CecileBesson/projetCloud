@@ -1,20 +1,20 @@
 -- Projet Cloud --
-DROP DATABASE IF EXISTS `cloud_equipe_e`;
-CREATE DATABASE `cloud_equipe_e` CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+CREATE SCHEMA IF NOT EXISTS `cloud_equipe_e`;
 USE `cloud_equipe_e`;
 
-
 CREATE TABLE `position`(
-`id_position` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+`id_position` int auto_increment primary key,
 `lat` DOUBLE  NOT NULL,
 `lon` DOUBLE  NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8  COLLATE=utf8_unicode_ci;
+);
+
 
 CREATE TABLE `user`(
-`id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+`id` int auto_increment primary key,
 `first_name` VARCHAR(100) NOT NULL,
 `last_name` VARCHAR(100) NOT NULL,
 `birth_day` DATE NOT NULL,
 `fk_position` INT NOT NULL,
 CONSTRAINT `fkPositionConstraint` FOREIGN KEY(`fk_position`) REFERENCES `position`(`id_position`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+);

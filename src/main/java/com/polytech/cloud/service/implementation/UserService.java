@@ -1,16 +1,17 @@
 package com.polytech.cloud.service.implementation;
 
 import com.polytech.cloud.entities.*;
-import com.polytech.cloud.exceptions.IncorrectlyFormedUserException;
+import com.polytech.cloud.exceptions.*;
 import com.polytech.cloud.io.UsersReader;
 import com.polytech.cloud.repository.*;
 import com.polytech.cloud.service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,7 @@ public class UserService implements IUserService {
 
     /**
      * Gets all the users
+     *
      * @return all the users
      */
     @Override
@@ -39,11 +41,61 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserEntity findByIdUser(String id) {
+    public UserEntity findByIdUser(int id) {
         return this.userRepository.findById(id);
     }
 
-        @Override
+    @Transactional
+    public void replaceAll(List<UserEntity> users) throws ReplaceAllPutException, IncorrectlyFormedUserException {
+        for (UserEntity user : users) {
+            this.checkIfUserIsCorrectlyFormed(user);
+        }
+        try {
+            this.userRepository.deleteAll();
+            this.userRepository.resetAutoIncrementSeed();
+            this.positionRepository.deleteAll();
+            this.positionRepository.resetAutoIncrementSeed();
+            this.userRepository.saveAll(users);
+        } catch (Exception e) {
+            throw new ReplaceAllPutException("Could not save all the given users with PUT. : " + e.getMessage());
+        }
+
+    }
+
+    private void checkIfUserIsCorrectlyFormed(UserEntity ue) throws IncorrectlyFormedUserException {
+        if (ue == null || ue.getPositionByFkPosition() == null) {
+            throw new IncorrectlyFormedUserException("Some of the users fields are null or invalid");
+        }
+
+        BigDecimal lat = ue.getPositionByFkPosition().getLat();
+        BigDecimal lon = ue.getPositionByFkPosition().getLon();
+
+        boolean allNotNull = ue.getFirstName() != null && ue.getLastName() != null && ue.getBirthDay() != null
+                && ue.getPositionByFkPosition() != null
+                && ue.getPositionByFkPosition().getLon() != null
+                && ue.getPositionByFkPosition().getLat() != null;
+        if (!allNotNull) {
+            throw new IncorrectlyFormedUserException("Some of the users fields are null or invalid");
+        }
+
+
+        boolean coordinatesDoesNotExceedLimit = ((lat.intValue() >= -90 && lat.intValue() <= 90)
+                && (lon.intValue() >= -180 && lon.intValue() <= 180));
+        if (!coordinatesDoesNotExceedLimit) {
+            throw new IncorrectlyFormedUserException("Some coordinates exceed the limits.");
+        }
+    }
+
+    @Override
+    public void deleteAll() throws DeleteAllException {
+        try {
+            this.userRepository.deleteAll();
+        } catch (Exception e) {
+            throw new DeleteAllException("Users could not be deleted from the database");
+        }
+    }
+
+    @Override
     public void saveAllRandomUsersToDatabase() throws IOException, IncorrectlyFormedUserException {
         this.userRepository.deleteAll();
         List<UserEntity> randomUsers = this.usersReader.getUsersEntityListFromResourceFile();
@@ -52,50 +104,43 @@ public class UserService implements IUserService {
         this.userRepository.saveAll(randomUsers);
     }
 
-
     /**
      * Creates a new user.
      *
-     * @param user the user to create
+     * @param newUser the user to create
      * @throws InvalidParameterException if the attributes of the user are not correct.
      */
-    public void createUser(UserEntity user){
+    public void createUser(UserEntity newUser) throws CreatePostException, IncorrectlyFormedUserException {
         // check attributes validity
-        if(user.getFirstName() == null) {
-            throw new InvalidParameterException("You must fill in a first name.");
-        }
-        if(user.getLastName() == null) {
-            throw new InvalidParameterException("You must fill in a last name.");
-        }
-        if(user.getBirthDay() == null) {
-            throw new InvalidParameterException("You must fill in a birthday date.");
+        checkIfUserIsCorrectlyFormed(newUser);
+        try{
+            this.userRepository.save(newUser);
+
+        }catch(Exception e){
+            throw new CreatePostException("Could not save given user with PUT. :" + e.getMessage());
         }
 
-        this.userRepository.save(user);
     }
 
     /**
      * Updates a user
      *
      * @param userToUpdateId the id of user to update
-     * @param updatedUser the user containing the new values
+     * @param updatedUser    the user containing the new values
      */
-    public void updateUser(String userToUpdateId, UserEntity updatedUser){
+    public void updateUser(int userToUpdateId, UserEntity updatedUser) throws IncorrectlyFormedUserException, ReplacePutException {
         UserEntity userToUpdate = this.getUserById(userToUpdateId);
-        if(updatedUser.getFirstName() != null) {
-            userToUpdate.setFirstName(updatedUser.getFirstName());
+        // check attributes validity
+        checkIfUserIsCorrectlyFormed(updatedUser);
+        try {
+            this.userRepository.save(userToUpdate);
+        } catch(Exception e){
+            throw new ReplacePutException("Could not update given user with POST. : " + e.getMessage());
         }
-        if(updatedUser.getLastName() != null) {
-            userToUpdate.setLastName(updatedUser.getLastName());
-        }
-        if(updatedUser.getBirthDay() != null) {
-            userToUpdate.setBirthDay(updatedUser.getBirthDay());
-        }
-        this.userRepository.save(userToUpdate);
     }
 
 
-    public UserEntity getUserById(String id) {
+    public UserEntity getUserById(int id) {
         return userRepository.findById(id);
     }
 
