@@ -1,10 +1,7 @@
 package com.polytech.cloud.service.interfaces;
 
 import com.polytech.cloud.entities.UserEntity;
-import com.polytech.cloud.exceptions.DeleteAllException;
-import com.polytech.cloud.exceptions.IncorrectlyFormedUserException;
-import com.polytech.cloud.exceptions.ReplaceAllPutException;
-import com.polytech.cloud.exceptions.ReplacePutException;
+import com.polytech.cloud.exceptions.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +12,7 @@ public interface IUserService {
 
     public UserEntity findByIdUser(int id);
 
-    void deleteAUserById(int id);
+    void deleteAUserById(String id) throws UserToDeleteDoesNotExistException, UserIdIsAStringException;
     
     public void saveAllRandomUsersToDatabase() throws IOException, IncorrectlyFormedUserException, IOException, IncorrectlyFormedUserException;
 

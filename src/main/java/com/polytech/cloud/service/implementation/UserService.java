@@ -101,11 +101,36 @@ public class UserService implements IUserService {
 
     /**
      * Delete a user by his id.
-     * @param id the id of the user to delete.
+     * @param idString the id of the user to delete.
      */
     @Override
-    public void deleteAUserById(int id) {
-        this.userRepository.deleteAllById(id);
+    public void deleteAUserById(String idString) throws UserToDeleteDoesNotExistException, UserIdIsAStringException {
+
+        List<UserEntity> userEntities = this.userRepository.findAll();
+
+        try {
+            int id = Integer.parseInt(idString);
+
+            boolean doesUserToRemoveExist = false;
+
+            for (UserEntity userEntity : userEntities) {
+                if(userEntity.getId() == id) {
+                    doesUserToRemoveExist = true;
+                }
+                break;
+            }
+
+            if(doesUserToRemoveExist) {
+                this.userRepository.deleteAllById(id);
+            }
+            else {
+                throw new UserToDeleteDoesNotExistException("User does not exist into the database");
+            }
+        } catch (NumberFormatException e) {
+            throw new UserIdIsAStringException("Error : the user id is a string");
+        }
+
+
 
     }
 
