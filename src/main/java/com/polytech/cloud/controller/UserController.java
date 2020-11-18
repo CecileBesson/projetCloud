@@ -5,11 +5,16 @@ import com.polytech.cloud.exceptions.*;
 import com.polytech.cloud.responses.Error;
 import com.polytech.cloud.service.implementation.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModelAssembler;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 import com.polytech.cloud.responses.*;
@@ -17,6 +22,7 @@ import com.polytech.cloud.responses.*;
 import java.io.IOException;
 
 import static com.polytech.cloud.utils.ControllerExceptionBuilder.buildErrorResponseAndPrintStackTrace;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping("/user")
@@ -41,6 +47,29 @@ public class UserController {
         // todo : performance will need to be increased as soon as we can.
         return new ResponseEntity<List<UserEntity>>(this.userService.findAllUsers(), HttpStatus.OK);
     }
+
+    @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity <PagedModel< UserEntity >> AllUsers(Pageable pageable, PagedModelAssembler assembler) {
+        Page< UserEntity > users = userService.findAllUsers(pageable);
+        PagedModel < UserEntity > pr = assembler.toResource(users, linkTo(UserRESTController.class).slash("/users").withSelfRel());
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Link", createLinkHeader(pr));
+        return new ResponseEntity < > (assembler.toResource(users, linkTo(UserRESTController.class).slash("/users").withSelfRel()), responseHeaders, HttpStatus.OK);
+    }
+
+    private String createLinkHeader(PagedModel < UserEntity > pr) {
+        final StringBuilder linkHeader = new StringBuilder();
+        linkHeader.append(buildLinkHeader(pr.getLinks("first").get(0).getHref(), "first"));
+        linkHeader.append(", ");
+        linkHeader.append(buildLinkHeader(pr.getLinks("next").get(0).getHref(), "next"));
+        return linkHeader.toString();
+    }
+
+    public static String buildLinkHeader(final String uri, final String rel) {
+        return "<" + uri + ">; rel=\"" + rel + "\"";
+    }
+
+
 
     /**
      * Retrieve a user by his id
