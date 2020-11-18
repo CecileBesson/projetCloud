@@ -9,4 +9,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     UserEntity findById(String id);
 
+    void deleteAllById(int id);
+
 }

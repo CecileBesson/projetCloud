@@ -29,7 +29,8 @@ public class UserService implements IUserService {
     }
 
     /**
-     * Gets all the users
+     * Gets all the users.
+     *
      * @return all the users
      */
     @Override
@@ -37,12 +38,26 @@ public class UserService implements IUserService {
         return this.userRepository.findAll();
     }
 
+    /**
+     * Get a user by his id.
+     * @param id the id of the user to retrieve.
+     * @return a specific user.
+     */
     @Override
     public UserEntity findByIdUser(String id) {
         return this.userRepository.findById(id);
     }
-    
-        @Override
+
+    /**
+     * Delete a user by his id.
+     * @param id the id of the user to delete.
+     */
+    @Override
+    public void deleteAUserById(int id) {
+        this.userRepository.deleteAllById(id);
+    }
+
+    @Override
     public void saveAllRandomUsersToDatabase() throws IOException, IncorrectlyFormedUserException {
         this.userRepository.deleteAll();
         List<UserEntity> randomUsers = this.usersReader.getUsersEntityListFromResourceFile();

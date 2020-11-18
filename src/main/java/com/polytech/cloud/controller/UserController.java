@@ -9,10 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.polytech.cloud.exceptions.IncorrectlyFormedUserException;
 import com.polytech.cloud.responses.*;
-import com.polytech.cloud.service.implementation.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -54,6 +50,18 @@ public class UserController {
     public ResponseEntity<UserEntity> getAUser(
             @PathVariable String id) {
         return new ResponseEntity<UserEntity>(this.userService.findByIdUser(id), HttpStatus.OK);
+    }
+
+    /**
+     * Delete a user by his id.
+     * @param id user id.
+     * @return
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<ApiResponse> deleteUserById(@PathVariable int id) {
+        this.userService.deleteAUserById(id);
+        Success success = new Success(HttpStatus.OK, "The user n°" + id + " has been correctly deleted.");
+        return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
     }
 
 
