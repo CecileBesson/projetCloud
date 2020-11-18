@@ -3,7 +3,7 @@ stages:
   - build
 build:
   stage: build
-  script: maven package
+  script: mvn package
   artifacts:
     paths:
       - target/cloud-0.0.1-SNAPSHOT.jar
