@@ -1,8 +1,8 @@
 image: maven:3-openjdk-8
 stages:
   - build
-  - test-eval-cli
   - sonarqube-check
+  - - test-eval-cli
 
 sonarqube-check:
   stage: sonarqube-check
