@@ -1,7 +1,7 @@
 {
   "build": {
     "type": "maven",
-    "goal": "verify -Pprod"
+    "goal": "verify -Pprod -DskipTests"
   },
   "deploy": {
     "jarName": "target/*.jar"
