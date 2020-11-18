@@ -1,8 +1,8 @@
 image: maven:3-openjdk-8
 stages:
   - build
-  - sonarqube-check
   - test-eval-cli
+  - sonarqube-check
 
 sonarqube-check:
   stage: sonarqube-check
@@ -15,7 +15,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   only:
-    - feature/setUpGitLabCi
+    - main
   script:
     - mvn verify sonar:sonar -Dsonar.qualitygate.wait=true
   allow_failure: true
