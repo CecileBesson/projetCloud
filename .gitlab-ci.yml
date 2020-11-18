@@ -1,9 +1,27 @@
 image: maven:3-openjdk-8
 stages:
   - build
+  - test
+  - deploy
+
+unit_test:
+  stage: test
+  script:
+    - echo "unit test is being lanch"
+
+fonctional_test:
+  stage: test
+  script:
+    - echo "test fonctionnel is being lanch"
+
 build:
   stage: build
   script: mvn package
   artifacts:
     paths:
       - target/cloud-0.0.1-SNAPSHOT.jar
+
+production:
+  stage: deploy
+  script:
+    - echo "It is being deploy"
