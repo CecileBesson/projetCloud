@@ -70,7 +70,7 @@ class UserServiceTest extends UserBasicDataSamples {
 
         Assert.assertThrows(IncorrectlyFormedUserException.class, () ->
         {
-            userService.replace(user0);
+            userService.updateUser(0, user0);
         });
 
         user0.setBirthDay(Date.valueOf(LocalDate.now()));
@@ -81,7 +81,7 @@ class UserServiceTest extends UserBasicDataSamples {
         user0.setPositionByFkPosition(pos);
 
 
-        userService.replace(user0);
+        userService.updateUser(0, user0);
         assertEquals(user0, userService.findByIdUser(0));
 
         System.out.println("✔ replace");
@@ -130,6 +130,7 @@ class UserServiceTest extends UserBasicDataSamples {
     @Test
     void deleteAllTest() throws Exception {
 
+        //todo
         throw new Exception();
         //System.out.println("✔ deleteAll");
     }
@@ -137,6 +138,7 @@ class UserServiceTest extends UserBasicDataSamples {
     @Test
     void deleteTest() throws Exception {
 
+        //todo
         throw new Exception();
         //System.out.println("✔ delete");
     }
@@ -145,6 +147,7 @@ class UserServiceTest extends UserBasicDataSamples {
     @Test
     void createTest() throws Exception {
 
+        //todo
         throw new Exception();
         //System.out.println("✔ create");
     }

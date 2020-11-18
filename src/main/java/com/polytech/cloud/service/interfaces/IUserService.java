@@ -19,7 +19,6 @@ public interface IUserService {
 
     public void deleteAll() throws DeleteAllException;
 
-    public void replace(UserEntity user) throws IncorrectlyFormedUserException, ReplacePutException;
 
     public void replaceAll(List<UserEntity> users) throws ReplaceAllPutException, IncorrectlyFormedUserException;
 }

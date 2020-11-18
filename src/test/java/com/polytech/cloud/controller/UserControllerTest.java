@@ -92,7 +92,7 @@ class UserControllerTest extends UserBasicDataSamples {
 
     @Test
     void putByIdTest() throws Exception {
-        doNothing().when(userService).replace(user0);
+        doNothing().when(userService).updateUser(1, user0);
 
         mvc.perform(put("/user/dazssefqs466009--zefze&")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -101,7 +101,7 @@ class UserControllerTest extends UserBasicDataSamples {
         mvc.perform(put("/user/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(user0)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
 
         when(this.userService.findByIdUser(1)).thenReturn(this.user0);
 
