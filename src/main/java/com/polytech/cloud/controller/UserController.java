@@ -67,7 +67,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.DELETE)
     public ResponseEntity deleteAllUsers() throws DeleteAllException {
         this.userService.deleteAll();
-        ApiResponse resp = new Success(HttpStatus.OK, "All users were deleted.");
+        //ApiResponse resp = new Success(HttpStatus.OK, "All users were deleted.");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -77,10 +77,10 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<ApiResponse> deleteUserById(@PathVariable int id) {
-        this.userService.deleteAUserById(id);
-        Success success = new Success(HttpStatus.OK, "The user n°" + id + " has been correctly deleted.");
-        return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
+    public ResponseEntity<ApiResponse> deleteUserById(@PathVariable String id) throws UserToDeleteDoesNotExistException, UserIdIsAStringException {
+            this.userService.deleteAUserById(id);
+            Success success = new Success(HttpStatus.OK, "The user n°" + id + " has been correctly deleted.");
+            return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
     }
 
 
@@ -113,7 +113,7 @@ public class UserController {
      * @param user the user to create
      * @return no content http response
      */
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity createUser(@RequestBody UserEntity user) throws CreatePostException, IncorrectlyFormedUserException {
         this.userService.createUser(user);
         Success success = new Success(HttpStatus.OK, "POST successfuly completed. Given user was created.");
@@ -192,4 +192,20 @@ public class UserController {
     private ResponseEntity<ApiResponse> createPostException(DeleteAllException ex) {
         return buildErrorResponseAndPrintStackTrace(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
     }
+
+    @ExceptionHandler(UserToDeleteDoesNotExistException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private ResponseEntity<ApiResponse> userToDeleteDoesNotExist(UserToDeleteDoesNotExistException ex) {
+        return buildErrorResponseAndPrintStackTrace(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+    }
+
+    @ExceptionHandler(UserIdIsAStringException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    private ResponseEntity<ApiResponse> userIdIsAStringException(UserIdIsAStringException ex) {
+        return buildErrorResponseAndPrintStackTrace(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
+    }
+
+
 }

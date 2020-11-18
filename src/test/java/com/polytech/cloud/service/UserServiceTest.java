@@ -14,7 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -22,8 +24,7 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest extends UserBasicDataSamples {
@@ -130,10 +131,30 @@ class UserServiceTest extends UserBasicDataSamples {
     @Test
     void deleteAllTest() throws Exception {
 
-        //todo
-        throw new Exception();
-        //System.out.println("✔ deleteAll");
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                myUsers.clear();
+                return null;
+            }
+        }).when(this.userRepository).deleteAll();
+
+
+        Assert.assertEquals(3, myUsers.size());
+        this.userRepository.deleteAll();
+        assertEquals(0, myUsers.size());
+
+        System.out.println("✔ deleteAll");
     }
+    /*@Test
+    void findAllUsersTest() {
+        when(userRepository.findAll()).thenReturn(myUsers);
+
+        assertEquals(myUsers, userService.findAllUsers());
+
+        System.out.println("✔ findAll");
+    }*/
+
 
     @Test
     void deleteTest() throws Exception {

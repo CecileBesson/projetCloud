@@ -115,15 +115,23 @@ class UserControllerTest extends UserBasicDataSamples {
     }
 
     @Test
-    void deleteTest(){
-        //todo
+    void deleteTest() throws Exception {
+
+        mvc.perform(delete("/user/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
         System.out.println("✔ DELETE /user");
     }
 
     @Test
-    void deleteByIdTest(){
-        //todo
+    void deleteByIdTest() throws Exception {
+
+        mvc.perform(delete("/user/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
         System.out.println("✔ DELETE /user/{id}");
     }
