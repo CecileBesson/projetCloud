@@ -1,10 +1,11 @@
 image: maven:3-openjdk-8
 stages:
   - build
-  - test
-  - deploy
+  - sonarqube-check
+  - test-eval-cli
 
 sonarqube-check:
+  stage: sonarqube-check
   image: maven:3-openjdk-8
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
@@ -15,12 +16,21 @@ sonarqube-check:
       - .sonar/cache
   script:
     - mvn verify sonar:sonar -Dsonar.qualitygate.wait=true
-  allow_failure: false
+  allow_failure: true
+
+test-eval-cli:
+  stage: test-eval-cli
+  image: 15.2.1-alpine3.10
   only:
     - main
-sonar:
-  qualitygate:
-    wait=true:
+  before_script:
+    - get clone ${repo}
+    - cd ${project}
+  script:
+    - npm test
+  after_script:
+    - cd ..
+    - rm -r ${project}
 
 build:
   stage: build
@@ -28,10 +38,3 @@ build:
   artifacts:
     paths:
       - target/cloud-0.0.1-SNAPSHOT.jar
-
-production:
-  stage: deploy
-  script:
-    - echo "It is being deploy"
-  only:
-    -main
