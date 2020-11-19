@@ -83,15 +83,27 @@ public class UserController {
     }
 
     /**
-     * GET users by age
+     * GET users with age > gt
+     * @param gt
+     * @return pageSize first users corresponding to pageNo
+     */
+    @RequestMapping(value= "/age", method = RequestMethod.GET, params = "gt")
+    public ResponseEntity<List<UserEntity>> getUsersByAgeGt(
+            @RequestParam Integer gt) throws UserToGetDoesNotExistException {
+
+        return new ResponseEntity<List<UserEntity>>(this.userService.getUsersByAgeGt(gt), HttpStatus.OK);
+    }
+
+    /**
+     * GET users with age eq
      * @param eq
      * @return pageSize first users corresponding to pageNo
      */
-    @RequestMapping(value= "/age", method = RequestMethod.GET)
-    public ResponseEntity<List<UserEntity>> getUsersByAge(
+    @RequestMapping(value= "/age", method = RequestMethod.GET, params = "eq")
+    public ResponseEntity<List<UserEntity>> getUsersByAgeEq(
             @RequestParam Integer eq) throws UserToGetDoesNotExistException {
 
-        return new ResponseEntity<List<UserEntity>>(this.userService.getUsersByAge(eq), HttpStatus.OK);
+        return new ResponseEntity<List<UserEntity>>(this.userService.getUsersByAgeEq(eq), HttpStatus.OK);
     }
 
 

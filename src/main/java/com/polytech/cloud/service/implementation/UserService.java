@@ -167,16 +167,30 @@ public class UserService implements IUserService {
     }
 
     /**
-     *  Get 100 first users with age > eq
-     * @param eq age
+     *  Get 100 first users with age = eq
+     * @param eq
      * @return the users with age = eq
      * @throws UserToGetDoesNotExistException
      */
-    public List<UserEntity> getUsersByAge(Integer eq) throws UserToGetDoesNotExistException {
-        if(this.userRepository.findByAge(eq).isEmpty()){
+    public List<UserEntity> getUsersByAgeEq(Integer eq) throws UserToGetDoesNotExistException {
+        if(this.userRepository.findByAgeEq(eq).isEmpty()){
             throw new UserToGetDoesNotExistException("There is no user where age =" + eq);
         }else{
-            return this.userRepository.findByAge(eq);
+            return this.userRepository.findByAgeEq(eq);
+        }
+    }
+
+    /**
+     *  Get 100 first users with age > gt
+     * @param gt
+     * @return the users with age > eq
+     * @throws UserToGetDoesNotExistException
+     */
+    public List<UserEntity> getUsersByAgeGt(Integer gt) throws UserToGetDoesNotExistException {
+        if(this.userRepository.findByAgeGt(gt).isEmpty()){
+            throw new UserToGetDoesNotExistException("There is no user where age >" + gt);
+        }else{
+            return this.userRepository.findByAgeGt(gt);
         }
     }
 

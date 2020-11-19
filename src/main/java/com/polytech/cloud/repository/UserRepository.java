@@ -19,7 +19,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     public void deleteAllById(String id);
 
+    @Query(value ="SELECT * from user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) = :age limit 100", nativeQuery = true)
+    public List<UserEntity> findByAgeEq(@Param("age") Integer age);
+
     @Query(value ="SELECT * from user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) > :age limit 100", nativeQuery = true)
-    public List<UserEntity> findByAge(@Param("age") Integer age);
+    public List<UserEntity> findByAgeGt(@Param("age") Integer age);
 
 }
