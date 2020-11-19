@@ -2,26 +2,35 @@ package com.polytech.cloud.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user", catalog = "")
+@JsonPropertyOrder({"id", "firstName", "lastName", "positionByFkPosition", "birthDay"})
 public class UserEntity {
 
-    private int id;
+    private String id;
     private String firstName;
     private String lastName;
     private Date birthDay;
     private PositionEntity positionByFkPosition;
 
+    public UserEntity()
+    {
+        this.id = UUID.randomUUID().toString();
+    }
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false, length = 255)
-    public int getId() {
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    public String getId() {
         return id;
     }
 
@@ -38,7 +47,7 @@ public class UserEntity {
     }
 
 
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy", timezone = "UTC")
     @Basic
     @Column(name = "birth_day", nullable = false)
     public Date getBirthDay() {
@@ -70,7 +79,7 @@ public class UserEntity {
         return Objects.hash(id, firstName, lastName, birthDay, positionByFkPosition);
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

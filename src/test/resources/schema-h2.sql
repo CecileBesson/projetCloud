@@ -11,7 +11,7 @@ CREATE TABLE `position`(
 
 
 CREATE TABLE `user`(
-`id` int auto_increment primary key,
+`id` VARCHAR(100) primary key,
 `first_name` VARCHAR(100) NOT NULL,
 `last_name` VARCHAR(100) NOT NULL,
 `birth_day` DATE NOT NULL,
