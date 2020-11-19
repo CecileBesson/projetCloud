@@ -39,18 +39,6 @@ public class UserController {
         return new ResponseEntity<List<UserEntity>>(this.userService.get(), HttpStatus.OK);
     }
 
-    /**
-     * Delete a user by his id.
-     * @param id  user id.
-     * @return
-     */
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<ApiResponse> deleteUserById(@PathVariable String id) throws UserToDeleteDoesNotExistException, UserIdIsAStringException {
-            this.userService.deleteAUserById(id);
-            Success success = new Success(HttpStatus.OK, "The user n°" + id + " has been correctly deleted.");
-            return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
-    }
-
 
     /**
      * PUT/
