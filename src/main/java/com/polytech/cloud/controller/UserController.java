@@ -83,6 +83,19 @@ public class UserController {
     }
 
     /**
+     * GET users by age
+     * @param eq
+     * @return pageSize first users corresponding to pageNo
+     */
+    @RequestMapping(value= "/age", method = RequestMethod.GET)
+    public ResponseEntity<List<UserEntity>> getUsersByAge(
+            @RequestParam Integer eq) throws UserToGetDoesNotExistException {
+
+        return new ResponseEntity<List<UserEntity>>(this.userService.getUsersByAge(eq), HttpStatus.OK);
+    }
+
+
+    /**
      * POST/ Creates a new user.
      * @param user the user to create
      * @return no content http response

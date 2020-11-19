@@ -149,6 +149,38 @@ public class UserService implements IUserService {
     }
 
     /**
+     * Get 100 first users corresponding to the page number
+     *
+     * @param page
+     * @param pageSize
+     * @return the users corresponding to the page number
+     */
+    public List<UserEntity> getUsers(Integer page, Integer pageSize) {
+        Pageable paging =  PageRequest.of(page, pageSize);
+        Page<UserEntity> pagedResult = userRepository.findAll(paging);
+
+        if(pagedResult.hasContent()) {
+            return pagedResult.getContent();
+        } else {
+            return new ArrayList<UserEntity>();
+        }
+    }
+
+    /**
+     *  Get 100 first users with age > eq
+     * @param eq age
+     * @return the users with age = eq
+     * @throws UserToGetDoesNotExistException
+     */
+    public List<UserEntity> getUsersByAge(Integer eq) throws UserToGetDoesNotExistException {
+        if(this.userRepository.findByAge(eq).isEmpty()){
+            throw new UserToGetDoesNotExistException("There is no user where age =" + eq);
+        }else{
+            return this.userRepository.findByAge(eq);
+        }
+    }
+
+    /**
      * Inserts 5k random users into the database from the "data/data.json" resource file.
      */
     @Override
@@ -196,21 +228,4 @@ public class UserService implements IUserService {
         return this.userRepository.findById(id) != null;
     }
 
-    /**
-     * Get 100 first users corresponding to the page number
-     *
-     * @param page
-     * @param pageSize
-     * @return the users corresponding to the page number
-     */
-    public List<UserEntity> getUsers(Integer page, Integer pageSize) {
-        Pageable paging =  PageRequest.of(page, pageSize);
-        Page<UserEntity> pagedResult = userRepository.findAll(paging);
-
-        if(pagedResult.hasContent()) {
-            return pagedResult.getContent();
-        } else {
-            return new ArrayList<UserEntity>();
-        }
-    }
 }
