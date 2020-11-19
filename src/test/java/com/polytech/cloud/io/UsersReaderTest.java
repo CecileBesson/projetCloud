@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.List;
 
 @SpringBootTest
-@AutoConfigureTestDatabase
 class UsersReaderTest {
 
     @Autowired

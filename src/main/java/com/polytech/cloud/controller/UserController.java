@@ -23,11 +23,6 @@ import static com.polytech.cloud.utils.ControllerExceptionBuilder.buildErrorResp
 @RequestMapping("/user")
 public class UserController {
 
-    //todo :
-    // DELETE /user -> supprime toute la collection des utilisateurs. Please reset the seed
-    // DELETE /user/{id} -> supprime l'utilisateur correspondant
-
-
     private final UserService userService;
 
     @Autowired
@@ -35,53 +30,13 @@ public class UserController {
         this.userService = service;
     }
 
-    // GET /
-   @RequestMapping(value="/all", method = RequestMethod.GET)
+    /**
+     * GET /user
+     */
+    @RequestMapping(value="all", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<List<UserEntity>> getAllUsers() {
-        // todo : performance will need to be increased as soon as we can.
-        return new ResponseEntity<List<UserEntity>>(this.userService.findAllUsers(), HttpStatus.OK);
-    }
-
-    /**
-     * Retrieve a user by his id
-     * GET/{id}
-     *
-     * @param id users id
-     * @return a specific user
-     */
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<UserEntity> getAUser(@PathVariable int id) {
-
-        UserEntity result = this.userService.findByIdUser(id);
-
-        if (result != null) {
-            return new ResponseEntity<UserEntity>(result, HttpStatus.OK);
-
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-    }
-
-
-    //PAGINATION
-    @RequestMapping(method = RequestMethod.GET /*, params= {"pageNo","pageSize"}*/)
-    public ResponseEntity<List<UserEntity>> getUsersByPage(
-            @RequestParam(defaultValue = "0") Integer pageNo,
-            @RequestParam(defaultValue = "100") Integer pageSize)
-    {
-
-        return new ResponseEntity<List<UserEntity>>(this.userService.getUsers(pageNo, pageSize), HttpStatus.OK);
-    }
-
-
-    // DELETE /
-    @RequestMapping(method = RequestMethod.DELETE)
-    public ResponseEntity deleteAllUsers() throws DeleteAllException {
-        this.userService.deleteAll();
-        //ApiResponse resp = new Success(HttpStatus.OK, "All users were deleted.");
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<List<UserEntity>>(this.userService.get(), HttpStatus.OK);
     }
 
     /**
@@ -110,9 +65,9 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<List<UserEntity>> replaceAll(@RequestBody List<UserEntity> newUsers) throws ReplaceAllPutException, IncorrectlyFormedUserException {
         if (newUsers != null) {
-            this.userService.replaceAll(newUsers);
+            this.userService.put(newUsers);
             Success success = new Success(HttpStatus.CREATED, "PUT successfuly completed. Users were replaced");
-            return new ResponseEntity<List<UserEntity>>(this.userService.findAllUsers(), HttpStatus.CREATED);
+            return new ResponseEntity<List<UserEntity>>(this.userService.get(), HttpStatus.CREATED);
         } else {
             Error error = new Error(HttpStatus.BAD_REQUEST, "Given params were incorrect");
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -120,50 +75,91 @@ public class UserController {
     }
 
     /**
-     * POST/
-     * Creates a new user.
-     *
+     * DELETE/
+     */
+    @RequestMapping(method = RequestMethod.DELETE)
+    public ResponseEntity deleteAllUsers() throws DeleteAllException {
+        this.userService.delete();
+        //ApiResponse resp = new Success(HttpStatus.OK, "All users were deleted.");
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * GET/{id}
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<UserEntity> getAUser(@PathVariable String id) throws UserToGetDoesNotExistException, StringIdExceptionForGetException {
+        UserEntity result = this.userService.getById(id);
+        return new ResponseEntity<UserEntity>(result, HttpStatus.OK);
+    }
+
+    /**
+     * POST/ Creates a new user.
      * @param user the user to create
      * @return no content http response
      */
     @RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity createUser(@RequestBody UserEntity user) throws CreatePostException, IncorrectlyFormedUserException {
-        this.userService.createUser(user);
-        Success success = new Success(HttpStatus.OK, "POST successfuly completed. Given user was created.");
-        return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
+        this.userService.post(user);
+        return new ResponseEntity<UserEntity>(user, HttpStatus.CREATED);
     }
 
     /**
-     * PUT/{id}
-     * Updates the current user
-     *
-     * @param user the user to update
-     * @return no content http response
+     * PUT/{id} Updates the current user
      */
-    @PutMapping(value = "/{id}")
-    public ResponseEntity updateUser(@RequestBody UserEntity user, @PathVariable int id) throws ReplacePutException, IncorrectlyFormedUserException {
-        this.userService.updateUser(id, user);
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public ResponseEntity updateUser(@RequestBody UserEntity user, @PathVariable String id) throws ReplacePutException, IncorrectlyFormedUserException {
+        this.userService.putById(id, user);
         return ResponseEntity.ok().build();
     }
 
 
     /**
+     * DELETE/{id}
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<ApiResponse> deleteUserById(@PathVariable String id) throws UserToDeleteDoesNotExistException, StringIdExceptionForDelete {
+            this.userService.deleteById(id);
+            Success success = new Success(HttpStatus.OK, "The user n°" + id + " has been correctly deleted.");
+            return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
+    }
+
+
+    /**
      * This operation is destructive. It removes all users and adds random ones into the database.
-     *
-     * @return
-     * @throws IOException
-     * @throws IncorrectlyFormedUserException
      */
     @RequestMapping(value = "/dev/insert-random", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<ApiResponse> saveRandomUsersToDatabase() throws IOException, IncorrectlyFormedUserException {
-        this.userService.saveAllRandomUsersToDatabase();
+        this.userService.insertRandomUsersIntoDatabase();
 
         Success success = new Success(HttpStatus.OK, "Random users were inserted into the database");
         return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
     }
 
-    /* Exception handlers */
+
+    /**
+     * GET users
+     * @param pageNo the page number
+     * @param pageSize the page size
+     * @return pageSize first users corresponding to pageNo
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<List<UserEntity>> getUsersByPage(
+            @RequestParam(defaultValue = "0") Integer pageNo,
+            @RequestParam(defaultValue = "100") Integer pageSize)
+    {
+
+        return new ResponseEntity<List<UserEntity>>(this.userService.getUsers(pageNo, pageSize), HttpStatus.OK);
+    }
+
+
+
+
+
+    /* --------------------------------- Exception handlers --------------------------------------------------------------*/
+
     @ExceptionHandler(IOException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -208,17 +204,29 @@ public class UserController {
 
     @ExceptionHandler(UserToDeleteDoesNotExistException.class)
     @ResponseBody
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    private ResponseEntity<ApiResponse> userToDeleteDoesNotExist(UserToDeleteDoesNotExistException ex) {
-        return buildErrorResponseAndPrintStackTrace(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-    }
-
-    @ExceptionHandler(UserIdIsAStringException.class)
-    @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    private ResponseEntity<ApiResponse> userIdIsAStringException(UserIdIsAStringException ex) {
+    private ResponseEntity<ApiResponse> userToDeleteDoesNotExist(UserToDeleteDoesNotExistException ex) {
         return buildErrorResponseAndPrintStackTrace(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
     }
 
+    @ExceptionHandler(StringIdExceptionForDelete.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    private ResponseEntity<ApiResponse> stringIdExceptionForDelete(StringIdExceptionForDelete ex) {
+        return buildErrorResponseAndPrintStackTrace(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
+    }
 
+    @ExceptionHandler(UserToGetDoesNotExistException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private ResponseEntity<ApiResponse> userToGetDoesNotExistException(UserToGetDoesNotExistException ex) {
+        return buildErrorResponseAndPrintStackTrace(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+    }
+
+    @ExceptionHandler(StringIdExceptionForGetException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private ResponseEntity<ApiResponse> stringIdExceptionForGetException(StringIdExceptionForGetException ex) {
+        return buildErrorResponseAndPrintStackTrace(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+    }
 }
