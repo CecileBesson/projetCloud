@@ -10,9 +10,9 @@ public interface IUserService {
 
     public List<UserEntity> findAllUsers();
 
-    public UserEntity findByIdUser(int id);
+    UserEntity findByIdUser(String idString) throws UserToGetDoesNotExistException, StringIdExceptionForGetException;
 
-    void deleteAUserById(String id) throws UserToDeleteDoesNotExistException, UserIdIsAStringException;
+    void deleteAUserById(String id) throws UserToDeleteDoesNotExistException, StringIdExceptionForDelete;
     
     public void saveAllRandomUsersToDatabase() throws IOException, IncorrectlyFormedUserException, IOException, IncorrectlyFormedUserException;
 

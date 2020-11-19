@@ -2,13 +2,17 @@ package com.polytech.cloud.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Objects;
 
 @Entity
 @Table(name = "user", catalog = "")
+@JsonPropertyOrder({"id", "firstName", "lastName", "positionByFkPosition", "birthDay"})
 public class UserEntity {
 
     private int id;
@@ -21,6 +25,7 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false, length = 255)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public int getId() {
         return id;
     }
@@ -38,7 +43,7 @@ public class UserEntity {
     }
 
 
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy", timezone = "UTC")
     @Basic
     @Column(name = "birth_day", nullable = false)
     public Date getBirthDay() {
@@ -84,6 +89,10 @@ public class UserEntity {
 
     public void setBirthDay(Date birthDay) {
         this.birthDay = birthDay;
+//        Calendar c = Calendar.getInstance();
+//        c.setTime(birthDay);
+//        c.add(Calendar.DATE, 0);
+//        this.birthDay = new java.sql.Date(c.getTimeInMillis());
     }
 
     public void setPositionByFkPosition(PositionEntity positionByFkPosition) {

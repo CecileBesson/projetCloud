@@ -3,9 +3,7 @@ package com.polytech.cloud.service;
 import com.polytech.cloud.UserBasicDataSamples;
 import com.polytech.cloud.entities.PositionEntity;
 import com.polytech.cloud.entities.UserEntity;
-import com.polytech.cloud.exceptions.IncorrectlyFormedUserException;
-import com.polytech.cloud.exceptions.ReplaceAllPutException;
-import com.polytech.cloud.exceptions.ReplacePutException;
+import com.polytech.cloud.exceptions.*;
 import com.polytech.cloud.repository.PositionRepository;
 import com.polytech.cloud.repository.UserRepository;
 import com.polytech.cloud.service.implementation.UserService;
@@ -49,18 +47,18 @@ class UserServiceTest extends UserBasicDataSamples {
     }
 
     @Test
-    void findByIdUserTest() {
+    void findByIdUserTest() throws UserToGetDoesNotExistException, StringIdExceptionForGetException {
 
         when(userRepository.findById(1)).thenReturn(user0);
 
-        assertEquals(user0, userService.findByIdUser(1));
-        assertNull(userService.findByIdUser(4));
+        assertEquals(user0, userService.findByIdUser("1"));
+        assertNull(userService.findByIdUser("4"));
 
         System.out.println("✔ findById");
     }
 
     @Test
-    void replaceTest() throws ReplacePutException, IncorrectlyFormedUserException {
+    void replaceTest() throws ReplacePutException, IncorrectlyFormedUserException, UserToGetDoesNotExistException, StringIdExceptionForGetException {
 
         user0.setId(0);
         when(userRepository.findById(0)).thenReturn(user0);
@@ -83,7 +81,7 @@ class UserServiceTest extends UserBasicDataSamples {
 
 
         userService.updateUser(0, user0);
-        assertEquals(user0, userService.findByIdUser(0));
+        assertEquals(user0, userService.findByIdUser("0"));
 
         System.out.println("✔ replace");
     }
@@ -146,15 +144,6 @@ class UserServiceTest extends UserBasicDataSamples {
 
         System.out.println("✔ deleteAll");
     }
-    /*@Test
-    void findAllUsersTest() {
-        when(userRepository.findAll()).thenReturn(myUsers);
-
-        assertEquals(myUsers, userService.findAllUsers());
-
-        System.out.println("✔ findAll");
-    }*/
-
 
     @Test
     void deleteTest() throws Exception {

@@ -52,9 +52,9 @@ class UserControllerTest extends UserBasicDataSamples {
     @Test
     void getByIdTest() throws Exception {
 
-        when(userService.findByIdUser(1)).thenReturn(user0);
-        when(userService.findByIdUser(2)).thenReturn(user1);
-        when(userService.findByIdUser(3)).thenReturn(user2);
+        when(userService.findByIdUser("1")).thenReturn(user0);
+        when(userService.findByIdUser("2")).thenReturn(user1);
+        when(userService.findByIdUser("3")).thenReturn(user2);
 
         mvc.perform(get("/user/1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -103,7 +103,7 @@ class UserControllerTest extends UserBasicDataSamples {
                 .content(mapper.writeValueAsString(user0)))
                 .andExpect(status().isOk());
 
-        when(this.userService.findByIdUser(1)).thenReturn(this.user0);
+        when(this.userService.findByIdUser("1")).thenReturn(this.user0);
 
 
         mvc.perform(put("/user/1")

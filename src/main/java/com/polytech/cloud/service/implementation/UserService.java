@@ -6,12 +6,16 @@ import com.polytech.cloud.io.UsersReader;
 import com.polytech.cloud.repository.*;
 import com.polytech.cloud.service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,13 +45,26 @@ public class UserService implements IUserService {
 
     /**
      * Get a user by his id.
-     * @param id the id of the user to retrieve.
+     * @param idString the id of the user to retrieve.
      * @return a specific user.
      */
     @Override
-    public UserEntity findByIdUser(int id) {
-        return this.userRepository.findById(id);
-    }
+    public UserEntity findByIdUser(String idString) throws UserToGetDoesNotExistException, StringIdExceptionForGetException {
+
+        try {
+            int id = Integer.parseInt(idString);
+            boolean doesUserToGetExist = this.doesUserExist(id);
+
+            if (doesUserToGetExist) {
+                return this.userRepository.findById(id);
+            } else {
+                throw new UserToGetDoesNotExistException("User does not exist into the database");
+            }
+
+        } catch (NumberFormatException e) {
+            throw new StringIdExceptionForGetException("Error : the user id is a string");
+        }
+            }
 
     @Transactional
     public void replaceAll(List<UserEntity> users) throws ReplaceAllPutException, IncorrectlyFormedUserException {
@@ -104,21 +121,12 @@ public class UserService implements IUserService {
      * @param idString the id of the user to delete.
      */
     @Override
-    public void deleteAUserById(String idString) throws UserToDeleteDoesNotExistException, UserIdIsAStringException {
-
-        List<UserEntity> userEntities = this.userRepository.findAll();
+    public void deleteAUserById(String idString) throws UserToDeleteDoesNotExistException, StringIdExceptionForDelete {
 
         try {
             int id = Integer.parseInt(idString);
 
-            boolean doesUserToRemoveExist = false;
-
-            for (UserEntity userEntity : userEntities) {
-                if(userEntity.getId() == id) {
-                    doesUserToRemoveExist = true;
-                }
-                break;
-            }
+            boolean doesUserToRemoveExist = doesUserExist(id);
 
             if(doesUserToRemoveExist) {
                 this.userRepository.deleteAllById(id);
@@ -127,11 +135,24 @@ public class UserService implements IUserService {
                 throw new UserToDeleteDoesNotExistException("User does not exist into the database");
             }
         } catch (NumberFormatException e) {
-            throw new UserIdIsAStringException("Error : the user id is a string");
+            throw new StringIdExceptionForDelete("Error : the user id is a string");
         }
 
 
+    }
 
+    private boolean doesUserExist(int id) {
+        List<UserEntity> userEntities = this.userRepository.findAll();
+
+        boolean doesUserToRemoveExist = false;
+
+        for (UserEntity userEntity : userEntities) {
+            if(userEntity.getId() == id) {
+                doesUserToRemoveExist = true;
+            }
+            break;
+        }
+        return doesUserToRemoveExist;
     }
 
     @Override
@@ -170,7 +191,7 @@ public class UserService implements IUserService {
     public void updateUser(int userToUpdateId, UserEntity updatedUser) throws IncorrectlyFormedUserException, ReplacePutException {
         UserEntity userToUpdate = this.getUserById(userToUpdateId);
         // check attributes validity
-        checkIfUserIsCorrectlyFormed(updatedUser);
+        checkIfUserIsCorrectlyFormed(userToUpdate);
         try {
             this.userRepository.save(userToUpdate);
         } catch(Exception e){

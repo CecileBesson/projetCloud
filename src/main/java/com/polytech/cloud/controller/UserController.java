@@ -51,16 +51,14 @@ public class UserController {
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<UserEntity> getAUser(@PathVariable int id) {
+    public ResponseEntity<UserEntity> getAUser(@PathVariable String id) throws UserToGetDoesNotExistException, StringIdExceptionForGetException {
 
-        UserEntity result = this.userService.findByIdUser(id);
-
-        if (result != null) {
+            UserEntity result = this.userService.findByIdUser(id);
             return new ResponseEntity<UserEntity>(result, HttpStatus.OK);
 
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+
+
+        //return new ResponseEntity<UserEntity>(result, HttpStatus.OK);
     }
 
     // DELETE /
@@ -77,7 +75,7 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<ApiResponse> deleteUserById(@PathVariable String id) throws UserToDeleteDoesNotExistException, UserIdIsAStringException {
+    public ResponseEntity<ApiResponse> deleteUserById(@PathVariable String id) throws UserToDeleteDoesNotExistException, StringIdExceptionForDelete {
             this.userService.deleteAUserById(id);
             Success success = new Success(HttpStatus.OK, "The user n°" + id + " has been correctly deleted.");
             return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
@@ -116,8 +114,7 @@ public class UserController {
     @RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity createUser(@RequestBody UserEntity user) throws CreatePostException, IncorrectlyFormedUserException {
         this.userService.createUser(user);
-        Success success = new Success(HttpStatus.OK, "POST successfuly completed. Given user was created.");
-        return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
+        return new ResponseEntity<UserEntity>(user, HttpStatus.CREATED);
     }
 
     /**
@@ -127,7 +124,7 @@ public class UserController {
      * @param user the user to update
      * @return no content http response
      */
-    @PutMapping(value = "/{id}")
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity updateUser(@RequestBody UserEntity user, @PathVariable int id) throws ReplacePutException, IncorrectlyFormedUserException {
         this.userService.updateUser(id, user);
         return ResponseEntity.ok().build();
@@ -150,7 +147,7 @@ public class UserController {
         return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
     }
 
-    /* Exception handlers */
+    /* --------------------------------- Exception handlers --------------------------------------------------------------*/
     @ExceptionHandler(IOException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -200,12 +197,27 @@ public class UserController {
         return buildErrorResponseAndPrintStackTrace(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
     }
 
-    @ExceptionHandler(UserIdIsAStringException.class)
+    @ExceptionHandler(StringIdExceptionForDelete.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    private ResponseEntity<ApiResponse> userIdIsAStringException(UserIdIsAStringException ex) {
+    private ResponseEntity<ApiResponse> stringIdExceptionForDelete(StringIdExceptionForDelete ex) {
         return buildErrorResponseAndPrintStackTrace(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
     }
+
+    @ExceptionHandler(UserToGetDoesNotExistException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private ResponseEntity<ApiResponse> userToGetDoesNotExistException(UserToGetDoesNotExistException ex) {
+        return buildErrorResponseAndPrintStackTrace(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+    }
+
+    @ExceptionHandler(StringIdExceptionForGetException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private ResponseEntity<ApiResponse> stringIdExceptionForGetException(StringIdExceptionForGetException ex) {
+        return buildErrorResponseAndPrintStackTrace(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+    }
+
 
 
 }
