@@ -199,12 +199,12 @@ public class UserService implements IUserService {
     /**
      * Get 100 first users corresponding to the page number
      *
-     * @param pageNo
+     * @param page
      * @param pageSize
      * @return the users corresponding to the page number
      */
-    public List<UserEntity> getUsers(Integer pageNo, Integer pageSize) {
-        Pageable paging =  PageRequest.of(pageNo, pageSize);
+    public List<UserEntity> getUsers(Integer page, Integer pageSize) {
+        Pageable paging =  PageRequest.of(page, pageSize);
         Page<UserEntity> pagedResult = userRepository.findAll(paging);
 
         if(pagedResult.hasContent()) {

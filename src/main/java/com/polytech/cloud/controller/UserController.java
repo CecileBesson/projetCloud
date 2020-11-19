@@ -33,7 +33,7 @@ public class UserController {
     /**
      * GET /user
      */
-    @RequestMapping(value="all", method = RequestMethod.GET)
+    @RequestMapping(value = "/all", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<List<UserEntity>> getAllUsers() {
         return new ResponseEntity<List<UserEntity>>(this.userService.get(), HttpStatus.OK);
@@ -129,17 +129,17 @@ public class UserController {
 
     /**
      * GET users
-     * @param pageNo the page number
+     * @param page the page number
      * @param pageSize the page size
      * @return pageSize first users corresponding to pageNo
      */
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<UserEntity>> getUsersByPage(
-            @RequestParam(defaultValue = "0") Integer pageNo,
+            @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "100") Integer pageSize)
     {
 
-        return new ResponseEntity<List<UserEntity>>(this.userService.getUsers(pageNo, pageSize), HttpStatus.OK);
+        return new ResponseEntity<List<UserEntity>>(this.userService.getUsers(page, pageSize), HttpStatus.OK);
     }
 
 
