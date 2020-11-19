@@ -9,24 +9,28 @@ import java.util.Date;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user", catalog = "")
 @JsonPropertyOrder({"id", "firstName", "lastName", "positionByFkPosition", "birthDay"})
 public class UserEntity {
 
-    private int id;
+    private String id;
     private String firstName;
     private String lastName;
     private Date birthDay;
     private PositionEntity positionByFkPosition;
 
+    public UserEntity()
+    {
+        this.id = UUID.randomUUID().toString();
+    }
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false, length = 255)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -75,7 +79,7 @@ public class UserEntity {
         return Objects.hash(id, firstName, lastName, birthDay, positionByFkPosition);
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -89,10 +93,6 @@ public class UserEntity {
 
     public void setBirthDay(Date birthDay) {
         this.birthDay = birthDay;
-//        Calendar c = Calendar.getInstance();
-//        c.setTime(birthDay);
-//        c.add(Calendar.DATE, 0);
-//        this.birthDay = new java.sql.Date(c.getTimeInMillis());
     }
 
     public void setPositionByFkPosition(PositionEntity positionByFkPosition) {

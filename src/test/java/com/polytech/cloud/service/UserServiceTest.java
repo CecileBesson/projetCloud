@@ -38,38 +38,42 @@ class UserServiceTest extends UserBasicDataSamples {
 
 
     @Test
-    void findAllUsersTest() {
+    void getTest() {
         when(userRepository.findAll()).thenReturn(myUsers);
 
-        assertEquals(myUsers, userService.findAllUsers());
+        assertEquals(myUsers, userService.get());
 
         System.out.println("✔ findAll");
     }
 
     @Test
-    void findByIdUserTest() throws UserToGetDoesNotExistException, StringIdExceptionForGetException {
+    void getByIdTest() throws UserToGetDoesNotExistException, StringIdExceptionForGetException {
 
-        when(userRepository.findById(1)).thenReturn(user0);
+        when(userRepository.findById("1")).thenReturn(user0);
 
-        assertEquals(user0, userService.findByIdUser("1"));
-        assertNull(userService.findByIdUser("4"));
+        assertEquals(user0, userService.getById("1"));
+
+        assertThrows(UserToGetDoesNotExistException.class, () ->
+        {
+            userService.getById("4");
+        });
 
         System.out.println("✔ findById");
     }
 
     @Test
-    void replaceTest() throws ReplacePutException, IncorrectlyFormedUserException, UserToGetDoesNotExistException, StringIdExceptionForGetException {
+    void putByIdTest() throws ReplacePutException, IncorrectlyFormedUserException, UserToGetDoesNotExistException, StringIdExceptionForGetException {
 
-        user0.setId(0);
-        when(userRepository.findById(0)).thenReturn(user0);
+        user0.setId("0");
+        when(userRepository.findById("0")).thenReturn(user0);
 
-        assertEquals(user0, userRepository.findById(0));
+        assertEquals(user0, userRepository.findById("0"));
         assertNull(user0.getLastName());
 
 
         Assert.assertThrows(IncorrectlyFormedUserException.class, () ->
         {
-            userService.updateUser(0, user0);
+            userService.putById("0", user0);
         });
 
         user0.setBirthDay(Date.valueOf(LocalDate.now()));
@@ -80,24 +84,24 @@ class UserServiceTest extends UserBasicDataSamples {
         user0.setPositionByFkPosition(pos);
 
 
-        userService.updateUser(0, user0);
-        assertEquals(user0, userService.findByIdUser("0"));
+        userService.putById("0", user0);
+        assertEquals(user0, userService.getById("0"));
 
         System.out.println("✔ replace");
     }
 
     @Test
-    void replaceAllTest() throws ReplaceAllPutException, IncorrectlyFormedUserException {
+    void putTest() throws ReplaceAllPutException, IncorrectlyFormedUserException {
 
         when(userRepository.findAll()).thenReturn(myUsers);
-        assertEquals(myUsers, userService.findAllUsers());
+        assertEquals(myUsers, userService.get());
 
         doNothing().when(userRepository).deleteAll();
         doNothing().when(positionRepository).deleteAll();
 
         Assert.assertThrows(IncorrectlyFormedUserException.class, () ->
         {
-            userService.replaceAll(myUsers);
+            userService.put(myUsers);
         });
 
         PositionEntity pos = new PositionEntity();
@@ -112,18 +116,18 @@ class UserServiceTest extends UserBasicDataSamples {
 
         Assert.assertThrows(IncorrectlyFormedUserException.class, () ->
         {
-            userService.replaceAll(myUsers);
+            userService.put(myUsers);
         });
 
         user0.setLastName("NAAJI");
         user1.setLastName("BENALI");
         user2.setLastName("BENALI");
 
-        userService.replaceAll(myUsers);
+        userService.put(myUsers);
 
-        assertEquals(myUsers, userService.findAllUsers());
+        assertEquals(myUsers, userService.get());
 
-        System.out.println("✔ replaceAll");
+        System.out.println("✔ put");
     }
 
     @Test
@@ -142,20 +146,20 @@ class UserServiceTest extends UserBasicDataSamples {
         this.userRepository.deleteAll();
         assertEquals(0, myUsers.size());
 
-        System.out.println("✔ deleteAll");
+        System.out.println("✔ delete");
     }
 
     @Test
     void deleteTest() throws Exception {
 
-        //todo
+       // when()
         throw new Exception();
         //System.out.println("✔ delete");
     }
 
     // post
     @Test
-    void createTest() throws Exception {
+    void postTest() throws Exception {
 
         //todo
         throw new Exception();

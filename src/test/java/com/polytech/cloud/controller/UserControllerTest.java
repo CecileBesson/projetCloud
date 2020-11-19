@@ -2,6 +2,8 @@ package com.polytech.cloud.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.polytech.cloud.UserBasicDataSamples;
+import com.polytech.cloud.exceptions.StringIdExceptionForGetException;
+import com.polytech.cloud.exceptions.UserToGetDoesNotExistException;
 import com.polytech.cloud.service.implementation.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +39,7 @@ class UserControllerTest extends UserBasicDataSamples {
     @Test
     public void getTest() throws Exception {
 
-        when(userService.findAllUsers()).thenReturn(myUsers);
+        when(userService.get()).thenReturn(myUsers);
 
         ResultActions response = mvc.perform(get("/user")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -52,9 +54,12 @@ class UserControllerTest extends UserBasicDataSamples {
     @Test
     void getByIdTest() throws Exception {
 
-        when(userService.findByIdUser("1")).thenReturn(user0);
-        when(userService.findByIdUser("2")).thenReturn(user1);
-        when(userService.findByIdUser("3")).thenReturn(user2);
+        when(userService.getById("1")).thenReturn(user0);
+        when(userService.getById("2")).thenReturn(user1);
+        when(userService.getById("3")).thenReturn(user2);
+        when(userService.getById("15532")).thenThrow(UserToGetDoesNotExistException.class);
+        when(userService.getById("willCauseBadRequestError")).thenThrow(StringIdExceptionForGetException.class);
+
 
         mvc.perform(get("/user/1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -68,14 +73,14 @@ class UserControllerTest extends UserBasicDataSamples {
 
         mvc.perform(get("/user/willCauseBadRequestError")
                 .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
+                    .andExpect(status().is(HttpStatus.NOT_FOUND.value()));
 
         System.out.println("✔ GET /user/{id}");
     }
 
     @Test
     void putTest() throws Exception {
-        doNothing().when(userService).replaceAll(myUsers);
+        doNothing().when(userService).put(myUsers);
 
         mvc.perform(put("/user")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -92,7 +97,7 @@ class UserControllerTest extends UserBasicDataSamples {
 
     @Test
     void putByIdTest() throws Exception {
-        doNothing().when(userService).updateUser(1, user0);
+        doNothing().when(userService).putById("1", user0);
 
         mvc.perform(put("/user/dazssefqs466009--zefze&")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -103,7 +108,7 @@ class UserControllerTest extends UserBasicDataSamples {
                 .content(mapper.writeValueAsString(user0)))
                 .andExpect(status().isOk());
 
-        when(this.userService.findByIdUser("1")).thenReturn(this.user0);
+        when(this.userService.getById("1")).thenReturn(this.user0);
 
 
         mvc.perform(put("/user/1")

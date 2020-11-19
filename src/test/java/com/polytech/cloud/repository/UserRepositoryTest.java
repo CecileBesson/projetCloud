@@ -45,8 +45,8 @@ class UserRepositoryTest extends UserDataSamples {
         userRepository.save(user1);
         userRepository.save(user2);
 
-        assertEquals(user1, userRepository.findById(1));
-        assertEquals(user2, userRepository.findById(2));
+        assertEquals(user1, userRepository.findById("1"));
+        assertEquals(user2, userRepository.findById("2"));
     }
 
     //todo : test any custom repository method here

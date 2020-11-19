@@ -9,13 +9,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    UserEntity findById(int id);
+    public UserEntity findById(String id);
 
-    @Modifying
-    @Query(value = "ALTER TABLE `user` AUTO_INCREMENT = 1",
-            nativeQuery = true)
-    public void resetAutoIncrementSeed();
+    public void deleteById(String id);
 
-    void deleteAllById(int id);
-
+    public void deleteAllById(String id);
 }

@@ -8,16 +8,20 @@ import java.util.List;
 
 public interface IUserService {
 
-    public List<UserEntity> findAllUsers();
+    public List<UserEntity> get();
 
-    UserEntity findByIdUser(String idString) throws UserToGetDoesNotExistException, StringIdExceptionForGetException;
+    public void put(List<UserEntity> users) throws ReplaceAllPutException, IncorrectlyFormedUserException;
 
-    void deleteAUserById(String id) throws UserToDeleteDoesNotExistException, StringIdExceptionForDelete;
-    
-    public void saveAllRandomUsersToDatabase() throws IOException, IncorrectlyFormedUserException, IOException, IncorrectlyFormedUserException;
+    public void delete() throws DeleteAllException;
 
-    public void deleteAll() throws DeleteAllException;
+    public UserEntity getById(String idString) throws UserToGetDoesNotExistException, StringIdExceptionForGetException;
 
+    public void post(UserEntity newUser) throws CreatePostException, IncorrectlyFormedUserException;
 
-    public void replaceAll(List<UserEntity> users) throws ReplaceAllPutException, IncorrectlyFormedUserException;
+    public void putById(String userToUpdateId, UserEntity updatedUser) throws IncorrectlyFormedUserException, ReplacePutException;
+
+    public void deleteById(String idString) throws UserToDeleteDoesNotExistException, StringIdExceptionForDelete;
+
+    public void insertRandomUsersIntoDatabase() throws IOException, IncorrectlyFormedUserException;
+
 }
