@@ -151,18 +151,44 @@ class UserServiceTest extends UserBasicDataSamples {
 
     @Test
     void deleteTest() throws Exception {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                myUsers.remove(user0);
+                return null;
+        }
+        }).when(this.userRepository).deleteById("1");
 
-       // when()
-        throw new Exception();
+        Assert.assertEquals(3, myUsers.size());
+        this.userRepository.deleteById("1");
+        assertEquals(2, myUsers.size());
+
+
         //System.out.println("✔ delete");
     }
 
     // post
     @Test
     void postTest() throws Exception {
+        UserEntity userToSave = new UserEntity();
+        userToSave.setFirstName("hello");
 
-        //todo
-        throw new Exception();
-        //System.out.println("✔ create");
+        when(this.userRepository.save(userToSave)).then(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                user0 = userToSave;
+                return null;
+            }
+        });
+
+        Assert.assertEquals("Dorian", user0.getFirstName());
+
+        this.userRepository.save(userToSave);
+
+        Assert.assertEquals(userToSave, user0);
+        Assert.assertEquals("hello", user0.getFirstName());
+
+
+        System.out.println("✔ post");
     }
 }
