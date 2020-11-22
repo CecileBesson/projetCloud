@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -111,6 +112,19 @@ public class UserController {
             this.userService.deleteById(id);
             Success success = new Success(HttpStatus.OK, "The user n°" + id + " has been correctly deleted.");
             return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/search", method = RequestMethod.GET, params = "term")
+    public ResponseEntity<List<UserEntity>> getFirst100UsersByName(
+            @RequestParam String term) {
+        return new ResponseEntity<List<UserEntity>>(this.userService.getFirst100UsersByName(term), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/nearest", method = RequestMethod.GET)
+    public ResponseEntity<List<UserEntity>> findFist10NearestUsers(
+            @RequestParam Double lat,
+            @RequestParam Double lon) {
+        return new ResponseEntity<List<UserEntity>>(this.userService.findFist10NearestUsers(lat, lon), HttpStatus.OK);
     }
 
 

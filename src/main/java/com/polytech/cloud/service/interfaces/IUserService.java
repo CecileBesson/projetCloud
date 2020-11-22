@@ -22,6 +22,10 @@ public interface IUserService {
 
     public void deleteById(String idString) throws UserToDeleteDoesNotExistException, StringIdExceptionForDelete;
 
+    public List<UserEntity> getFirst100UsersByName(String lastName);
+
+    public List<UserEntity> findFist10NearestUsers(Double lat, Double lon);
+
     public void insertRandomUsersIntoDatabase() throws IOException, IncorrectlyFormedUserException;
 
 }
