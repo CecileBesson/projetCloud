@@ -4,6 +4,7 @@ import com.polytech.cloud.entities.UserEntity;
 import com.polytech.cloud.exceptions.*;
 import com.polytech.cloud.responses.Error;
 import com.polytech.cloud.service.implementation.UserService;
+import javassist.tools.web.BadHttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import com.polytech.cloud.responses.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;
 
@@ -89,9 +91,15 @@ public class UserController {
      */
     @RequestMapping(value= "/age", method = RequestMethod.GET, params = "gt")
     public ResponseEntity<List<UserEntity>> getUsersByAgeGt(
-            @RequestParam Integer gt) throws UserToGetDoesNotExistException {
+            @RequestParam Integer gt,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "100") Integer pageSize) throws UserToGetDoesNotExistException {
+        if(gt<0){
+            Error error = new Error(HttpStatus.BAD_REQUEST, "Given param must be positive");
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
 
-        return new ResponseEntity<List<UserEntity>>(this.userService.getUsersByAgeGt(gt), HttpStatus.OK);
+        return new ResponseEntity<List<UserEntity>>(this.userService.getUsersByAgeGt(gt, page, pageSize), HttpStatus.OK);
     }
 
     /**
@@ -101,11 +109,31 @@ public class UserController {
      */
     @RequestMapping(value= "/age", method = RequestMethod.GET, params = "eq")
     public ResponseEntity<List<UserEntity>> getUsersByAgeEq(
-            @RequestParam Integer eq) throws UserToGetDoesNotExistException {
+            @RequestParam Integer eq,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "100") Integer pageSize) throws UserToGetDoesNotExistException {
+        if(eq<0){
+            Error error = new Error(HttpStatus.BAD_REQUEST, "Given param must be positive");
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity<List<UserEntity>>(this.userService.getUsersByAgeEq(eq), HttpStatus.OK);
+        }
+        return new ResponseEntity<List<UserEntity>>(this.userService.getUsersByAgeEq(eq, page, pageSize), HttpStatus.OK);
     }
 
+    /**
+     * GET users
+     * @param page the page number
+     * @param pageSize the page size
+     * @return pageSize first users corresponding to pageNo
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<List<UserEntity>> getUsersByPage(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "100") Integer pageSize)
+    {
+
+        return new ResponseEntity<List<UserEntity>>(this.userService.getUsers(page, pageSize), HttpStatus.OK);
+    }
 
     /**
      * POST/ Creates a new user.
@@ -152,20 +180,6 @@ public class UserController {
     }
 
 
-    /**
-     * GET users
-     * @param page the page number
-     * @param pageSize the page size
-     * @return pageSize first users corresponding to pageNo
-     */
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<UserEntity>> getUsersByPage(
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "100") Integer pageSize)
-    {
-
-        return new ResponseEntity<List<UserEntity>>(this.userService.getUsers(page, pageSize), HttpStatus.OK);
-    }
 
 
 

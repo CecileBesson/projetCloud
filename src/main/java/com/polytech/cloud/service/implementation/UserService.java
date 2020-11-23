@@ -166,18 +166,22 @@ public class UserService implements IUserService {
         }
     }
 
+
     /**
      *  Get 100 first users with age = eq
      * @param eq
      * @return the users with age = eq
      * @throws UserToGetDoesNotExistException
      */
-    public List<UserEntity> getUsersByAgeEq(Integer eq) throws UserToGetDoesNotExistException {
-        if(this.userRepository.findByAgeEq(eq).isEmpty()){
-            throw new UserToGetDoesNotExistException("There is no user where age =" + eq);
-        }else{
-            return this.userRepository.findByAgeEq(eq);
+    public List<UserEntity> getUsersByAgeEq(Integer eq, Integer page, Integer pageSize) throws UserToGetDoesNotExistException {
+        Pageable paging =  PageRequest.of(page, pageSize);
+        Page<UserEntity> pagedResult = this.userRepository.findByAgeEq(eq, paging);
+        if(pagedResult.hasContent()) {
+            return pagedResult.getContent();
+        } else {
+            return new ArrayList<UserEntity>();
         }
+
     }
 
     /**
@@ -186,11 +190,13 @@ public class UserService implements IUserService {
      * @return the users with age > eq
      * @throws UserToGetDoesNotExistException
      */
-    public List<UserEntity> getUsersByAgeGt(Integer gt) throws UserToGetDoesNotExistException {
-        if(this.userRepository.findByAgeGt(gt).isEmpty()){
-            throw new UserToGetDoesNotExistException("There is no user where age >" + gt);
-        }else{
-            return this.userRepository.findByAgeGt(gt);
+    public List<UserEntity> getUsersByAgeGt(Integer gt, Integer page, Integer pageSize) throws UserToGetDoesNotExistException {
+        Pageable paging =  PageRequest.of(page, pageSize);
+        Page<UserEntity> pagedResult = this.userRepository.findByAgeGt(gt, paging);
+        if(pagedResult.hasContent()) {
+            return pagedResult.getContent();
+        } else {
+            return new ArrayList<UserEntity>();
         }
     }
 

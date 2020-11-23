@@ -1,6 +1,9 @@
 package com.polytech.cloud.repository;
 
 import com.polytech.cloud.entities.UserEntity;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,10 +22,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     public void deleteAllById(String id);
 
-    @Query(value ="SELECT * from user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) = :age limit 100", nativeQuery = true)
-    public List<UserEntity> findByAgeEq(@Param("age") Integer age);
+    @Query(value ="SELECT * from user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) = :age",
+            countQuery = "SELECT count(*) FROM user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) = :age", nativeQuery = true)
+    public Page<UserEntity> findByAgeEq(@Param("age") Integer age, Pageable paging);
 
-    @Query(value ="SELECT * from user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) > :age limit 100", nativeQuery = true)
-    public List<UserEntity> findByAgeGt(@Param("age") Integer age);
+    @Query(value ="SELECT * from user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) > :age",
+            countQuery = "SELECT count(*) from user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) > :age", nativeQuery = true)
+    public Page<UserEntity> findByAgeGt(@Param("age") Integer age, Pageable paging);
 
 }

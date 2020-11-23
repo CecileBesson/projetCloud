@@ -10,6 +10,12 @@ public interface IUserService {
 
     public List<UserEntity> get();
 
+    public List<UserEntity> getUsers(Integer page, Integer pageSize);
+
+    public List<UserEntity> getUsersByAgeEq(Integer eq, Integer page, Integer pageSize) throws UserToGetDoesNotExistException;
+
+    public List<UserEntity> getUsersByAgeGt(Integer gt, Integer page, Integer pageSize) throws UserToGetDoesNotExistException;
+
     public void put(List<UserEntity> users) throws ReplaceAllPutException, IncorrectlyFormedUserException;
 
     public void delete() throws DeleteAllException;
