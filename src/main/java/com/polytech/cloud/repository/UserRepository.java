@@ -23,5 +23,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query(value = "SELECT u.* FROM user u, position p WHERE u.fk_position = p.id_position ORDER BY " +
             "ABS(p.lat - :lat) + ABS(p.lon - :lon) ASC LIMIT 10", nativeQuery = true)
-    public List<UserEntity> findFist10NearestUsers(Double lat, Double lon);
+    public List<UserEntity> findFirst10NearestUsers(Double lat, Double lon);
 }
