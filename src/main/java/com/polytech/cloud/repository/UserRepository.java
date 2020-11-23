@@ -1,6 +1,7 @@
 package com.polytech.cloud.repository;
 
 import com.polytech.cloud.entities.UserEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +20,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("DELETE FROM UserEntity u WHERE u.id =:id")
     public void deleteById(String id);
 
-    public List<UserEntity> findFirst100ByLastName(String lastName);
+    @Query(countQuery = "SELECT COUNT(*) FROM user where last_name := lastname", nativeQuery = true)
+    public List<UserEntity> findByLastName(String lastName, Pageable paging);
 
     @Query(value = "SELECT u.* FROM user u, position p WHERE u.fk_position = p.id_position ORDER BY " +
             "ABS(p.lat - :lat) + ABS(p.lon - :lon) ASC LIMIT 10", nativeQuery = true)

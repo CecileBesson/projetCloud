@@ -5,11 +5,9 @@ import com.polytech.cloud.exceptions.*;
 import com.polytech.cloud.responses.Error;
 import com.polytech.cloud.service.implementation.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -114,12 +112,27 @@ public class UserController {
             return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
     }
 
+    /**
+     * GET /search?term={}
+     * @param term the user's lastname.
+     * @param page the page number.
+     * @param pageSize the size page.
+     * @return the first 100 users corresponding to a specific lastname
+     */
     @RequestMapping(value = "/search", method = RequestMethod.GET, params = "term")
-    public ResponseEntity<List<UserEntity>> getFirst100UsersByName(
-            @RequestParam String term) {
-        return new ResponseEntity<List<UserEntity>>(this.userService.getFirst100UsersByName(term), HttpStatus.OK);
+    public ResponseEntity<List<UserEntity>> getUsersByName(
+            @RequestParam String term,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "100") Integer pageSize) {
+        return new ResponseEntity<List<UserEntity>>(this.userService.findByLastName(term, page, pageSize), HttpStatus.OK);
     }
 
+    /**
+     * GET /nearest?lat={}&lon={}
+     * @param lat the user's latitude.
+     * @param lon the user's longitude.
+     * @return the nearest users.
+     */
     @RequestMapping(value = "/nearest", method = RequestMethod.GET)
     public ResponseEntity<List<UserEntity>> findFist10NearestUsers(
             @RequestParam Double lat,

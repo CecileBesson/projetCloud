@@ -146,8 +146,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<UserEntity> getFirst100UsersByName(String lastName) {
-        return this.userRepository.findFirst100ByLastName(lastName);
+    public List<UserEntity> findByLastName(String lastName, Integer page, Integer pageSize) {
+        Pageable paging =  PageRequest.of(page, pageSize);
+        return this.userRepository.findByLastName(lastName, paging);
     }
 
     @Override
