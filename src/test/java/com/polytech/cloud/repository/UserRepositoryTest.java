@@ -6,8 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.TestPropertySource;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +43,16 @@ class UserRepositoryTest extends UserDataSamples {
         assertEquals(user2.getPositionByFkPosition(), userRepository.findById(user2.getId()).getPositionByFkPosition());
 
     }
+
+    @Test
+    void findByLastName() throws Exception {
+        userRepository.save(user1);
+
+        Pageable paging =  PageRequest.of(0, 100);
+        assertEquals(user1, userRepository.findByLastName(user1.getLastName(), paging).get(0));
+
+    }
+
 
     //todo : test any custom repository method here
 }

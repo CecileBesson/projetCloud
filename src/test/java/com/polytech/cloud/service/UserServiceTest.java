@@ -15,10 +15,14 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -190,5 +194,35 @@ class UserServiceTest extends UserBasicDataSamples {
 
 
         System.out.println("✔ post");
+    }
+
+    @Test
+    void findByLastNameTest() throws Exception {
+
+        List<UserEntity> userEntityList = new ArrayList<UserEntity>();
+        userEntityList.add(user3);
+        Pageable paging =  PageRequest.of(0, 100);
+        when(userRepository.findByLastName("Na", paging)).thenReturn(userEntityList);
+
+        assertEquals(userEntityList, userService.findByLastName("Na", 0, 100));
+
+        System.out.println("✔ findByLastName");
+
+    }
+
+    @Test
+    void getFirst10NearestUsersTest() throws Exception {
+
+        List<UserEntity> userEntityList = new ArrayList<UserEntity>();
+        userEntityList.add(user3);
+        userEntityList.add(user4);
+        userEntityList.add(user5);
+
+        when(userRepository.findFirst10NearestUsers(12.2,20.6)).thenReturn(userEntityList);
+
+        assertEquals(userEntityList, userService.getFirst10NearestUsers(12.2, 20.6));
+
+        System.out.println("✔ getFirst10NearestUsers");
+
     }
 }

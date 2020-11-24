@@ -148,7 +148,39 @@ class UserControllerTest extends UserBasicDataSamples {
         System.out.println("✔ POST /user");
     }
 
+    @Test
+    void getUsersByNameTest() throws Exception {
 
+        when(userService.findByLastName("Na", 0, 100)).thenReturn(myOtherUsers);
+
+        mvc.perform(get("/user/search?term=Na")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].lastName").value(user3.getLastName()))
+                .andExpect(jsonPath("$[1].lastName").value(user4.getLastName()))
+                .andExpect(jsonPath("$[2].lastName").value(user5.getLastName()));
+
+        System.out.println("✔ GET /user/search?term={}");
+    }
+
+    @Test
+    void getFirst10NearestUsersTest() throws Exception {
+
+        when(userService.getFirst10NearestUsers(78.2, 56.8)).thenReturn(myOtherUsers);
+
+        mvc.perform(get("/user/nearest?lat=78.2&lon=56.8")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].position.lat").value(user3.getPositionByFkPosition().getLat()))
+                .andExpect(jsonPath("$[0].position.lon").value(user3.getPositionByFkPosition().getLon()))
+                .andExpect(jsonPath("$[1].position.lat").value(user4.getPositionByFkPosition().getLat()))
+                .andExpect(jsonPath("$[1].position.lon").value(user4.getPositionByFkPosition().getLon()))
+                .andExpect(jsonPath("$[2].position.lat").value(user5.getPositionByFkPosition().getLat()))
+                .andExpect(jsonPath("$[2].position.lon").value(user5.getPositionByFkPosition().getLon()));
+
+        System.out.println("✔ GET /user/nearest?lat={}&lon={}");
+
+    }
 
 
 

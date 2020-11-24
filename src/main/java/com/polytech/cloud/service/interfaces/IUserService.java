@@ -24,7 +24,7 @@ public interface IUserService {
 
     public List<UserEntity> findByLastName(String lastName, Integer page, Integer pageSize);
 
-    public List<UserEntity> findFist10NearestUsers(Double lat, Double lon);
+    public List<UserEntity> getFirst10NearestUsers(Double lat, Double lon);
 
     public void insertRandomUsersIntoDatabase() throws IOException, IncorrectlyFormedUserException;
 
