@@ -187,10 +187,10 @@ public class UserController {
      * @return the nearest users.
      */
     @RequestMapping(value = "/nearest", method = RequestMethod.GET)
-    public ResponseEntity<List<UserEntity>> findFist10NearestUsers(
+    public ResponseEntity<List<UserEntity>> getFirst10NearestUsers(
             @RequestParam Double lat,
             @RequestParam Double lon) {
-        return new ResponseEntity<List<UserEntity>>(this.userService.findFist10NearestUsers(lat, lon), HttpStatus.OK);
+        return new ResponseEntity<List<UserEntity>>(this.userService.getFirst10NearestUsers(lat, lon), HttpStatus.OK);
     }
 
 

@@ -152,7 +152,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<UserEntity> findFist10NearestUsers(Double lat, Double lon) {
+    public List<UserEntity> getFirst10NearestUsers(Double lat, Double lon) {
         return this.userRepository.findFirst10NearestUsers(lat, lon);
     }
 
