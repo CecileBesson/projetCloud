@@ -156,9 +156,9 @@ class UserControllerTest extends UserBasicDataSamples {
         mvc.perform(get("/user/search?term=Na")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].lastName").value(user3.getLastName()))
-                .andExpect(jsonPath("$[1].lastName").value(user4.getLastName()))
-                .andExpect(jsonPath("$[2].lastName").value(user5.getLastName()));
+                .andExpect(jsonPath("$[0].lastName").value(user4.getLastName()))
+                .andExpect(jsonPath("$[1].lastName").value(user5.getLastName()))
+                .andExpect(jsonPath("$[2].lastName").value(user6.getLastName()));
 
         System.out.println("✔ GET /user/search?term={}");
     }
@@ -171,17 +171,58 @@ class UserControllerTest extends UserBasicDataSamples {
         mvc.perform(get("/user/nearest?lat=78.2&lon=56.8")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].position.lat").value(user3.getPositionByFkPosition().getLat()))
-                .andExpect(jsonPath("$[0].position.lon").value(user3.getPositionByFkPosition().getLon()))
-                .andExpect(jsonPath("$[1].position.lat").value(user4.getPositionByFkPosition().getLat()))
-                .andExpect(jsonPath("$[1].position.lon").value(user4.getPositionByFkPosition().getLon()))
-                .andExpect(jsonPath("$[2].position.lat").value(user5.getPositionByFkPosition().getLat()))
-                .andExpect(jsonPath("$[2].position.lon").value(user5.getPositionByFkPosition().getLon()));
+                .andExpect(jsonPath("$[0].position.lat").value(user4.getPositionByFkPosition().getLat()))
+                .andExpect(jsonPath("$[0].position.lon").value(user4.getPositionByFkPosition().getLon()))
+                .andExpect(jsonPath("$[1].position.lat").value(user5.getPositionByFkPosition().getLat()))
+                .andExpect(jsonPath("$[1].position.lon").value(user5.getPositionByFkPosition().getLon()))
+                .andExpect(jsonPath("$[2].position.lat").value(user6.getPositionByFkPosition().getLat()))
+                .andExpect(jsonPath("$[2].position.lon").value(user6.getPositionByFkPosition().getLon()));
 
         System.out.println("✔ GET /user/nearest?lat={}&lon={}");
 
     }
 
+    @Test
+    void getUserByPageSizeTest() throws Exception {
+        when(userService.getUsers(1, 2)).thenReturn(myUsers);
+        mvc.perform(get("/user?page=1&pageSize=2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[2].firstName").value(user2.getFirstName()))
+                .andExpect(jsonPath("$[3].firstName").value(user3.getFirstName()));
 
+        System.out.println("✔ GET /user?page={}&pageSize={}");
+    }
+
+
+    @Test
+    void getUserByPageTest() throws Exception {
+        when(userService.getUsers(1, 2)).thenReturn(myUserPage);
+        mvc.perform(get("/user?page=1&pageSize=2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(user11.getId()));
+        System.out.println("✔ GET /user?page={}&pageSize={}");
+    }
+    @Test
+    void getUsersByAgeEqTest() throws Exception {
+        when(userService.getUsersByAgeEq(20, 1, 2)).thenReturn(myUserPage1Eq20);
+        mvc.perform(get("/user/age?eq=20&page=1&pageSize=2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(user9.getId()))
+                .andExpect(jsonPath("$[1].id").value(user10.getId()));
+        System.out.println("✔ GET /user/age?eq={}&page={}&pageSize={}");
+    }
+    @Test
+    void getUsersByAgeGtTest() throws Exception {
+        when(userService.getUsersByAgeGt(20, 1, 2)).thenReturn(myUserPage1Gt20);
+        mvc.perform(get("/user/age?gt=20&page=1&pageSize=2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(user7.getId()))
+                .andExpect(jsonPath("$[1].id").value(user8.getId()));
+        System.out.println("✔ GET /user/age?eq={}&page={}&pageSize={}");
+    }
 
 }

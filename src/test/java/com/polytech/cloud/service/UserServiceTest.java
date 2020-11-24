@@ -200,7 +200,7 @@ class UserServiceTest extends UserBasicDataSamples {
     void findByLastNameTest() throws Exception {
 
         List<UserEntity> userEntityList = new ArrayList<UserEntity>();
-        userEntityList.add(user3);
+        userEntityList.add(user4);
         Pageable paging =  PageRequest.of(0, 100);
         when(userRepository.findByLastName("Na", paging)).thenReturn(userEntityList);
 
@@ -214,9 +214,9 @@ class UserServiceTest extends UserBasicDataSamples {
     void getFirst10NearestUsersTest() throws Exception {
 
         List<UserEntity> userEntityList = new ArrayList<UserEntity>();
-        userEntityList.add(user3);
         userEntityList.add(user4);
         userEntityList.add(user5);
+        userEntityList.add(user6);
 
         when(userRepository.findFirst10NearestUsers(12.2,20.6)).thenReturn(userEntityList);
 

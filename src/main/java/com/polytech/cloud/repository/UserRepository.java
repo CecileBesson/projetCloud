@@ -34,12 +34,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     public List<UserEntity> findFirst10NearestUsers(Double lat, Double lon);
     public void deleteAllById(String id);
 
-    @Query(value ="SELECT * from user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) = :age",
-            countQuery = "SELECT count(*) FROM user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) = :age", nativeQuery = true)
-    public Page<UserEntity> findByAgeEq(@Param("age") Integer age, Pageable paging);
+    @Query(value ="SELECT * from user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) = :age", nativeQuery = true)
+    public List<UserEntity> findByAgeEq(@Param("age") Integer age, Pageable paging);
 
-    @Query(value ="SELECT * from user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) > :age",
-            countQuery = "SELECT count(*) from user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) > :age", nativeQuery = true)
-    public Page<UserEntity> findByAgeGt(@Param("age") Integer age, Pageable paging);
+    @Query(value ="SELECT * from user where TIMESTAMPDIFF(YEAR, birth_day, CURDATE()) > :age", nativeQuery = true)
+    public List<UserEntity> findByAgeGt(@Param("age") Integer age, Pageable paging);
 
 }
