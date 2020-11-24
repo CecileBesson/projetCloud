@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -146,6 +143,17 @@ public class UserService implements IUserService {
             throw new UserToDeleteDoesNotExistException("User does not exist into the database");
 
         }
+    }
+
+    @Override
+    public List<UserEntity> findByLastName(String lastName, Integer page, Integer pageSize) {
+        Pageable paging =  PageRequest.of(page, pageSize);
+        return this.userRepository.findByLastName(lastName, paging);
+    }
+
+    @Override
+    public List<UserEntity> findFist10NearestUsers(Double lat, Double lon) {
+        return this.userRepository.findFirst10NearestUsers(lat, lon);
     }
 
     /**

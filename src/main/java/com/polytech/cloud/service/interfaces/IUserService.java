@@ -28,6 +28,10 @@ public interface IUserService {
 
     public void deleteById(String idString) throws UserToDeleteDoesNotExistException, StringIdExceptionForDelete;
 
+    public List<UserEntity> findByLastName(String lastName, Integer page, Integer pageSize);
+
+    public List<UserEntity> findFist10NearestUsers(Double lat, Double lon);
+
     public void insertRandomUsersIntoDatabase() throws IOException, IncorrectlyFormedUserException;
 
 }

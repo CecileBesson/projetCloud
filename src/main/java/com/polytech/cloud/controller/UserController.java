@@ -6,7 +6,6 @@ import com.polytech.cloud.responses.Error;
 import com.polytech.cloud.service.implementation.UserService;
 import javassist.tools.web.BadHttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -164,6 +163,34 @@ public class UserController {
             this.userService.deleteById(id);
             Success success = new Success(HttpStatus.OK, "The user n°" + id + " has been correctly deleted.");
             return new ResponseEntity<ApiResponse>(success, HttpStatus.OK);
+    }
+
+    /**
+     * GET /search?term={}
+     * @param term the user's lastname.
+     * @param page the page number.
+     * @param pageSize the size page.
+     * @return the first 100 users corresponding to a specific lastname
+     */
+    @RequestMapping(value = "/search", method = RequestMethod.GET, params = "term")
+    public ResponseEntity<List<UserEntity>> getUsersByName(
+            @RequestParam String term,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "100") Integer pageSize) {
+        return new ResponseEntity<List<UserEntity>>(this.userService.findByLastName(term, page, pageSize), HttpStatus.OK);
+    }
+
+    /**
+     * GET /nearest?lat={}&lon={}
+     * @param lat the user's latitude.
+     * @param lon the user's longitude.
+     * @return the nearest users.
+     */
+    @RequestMapping(value = "/nearest", method = RequestMethod.GET)
+    public ResponseEntity<List<UserEntity>> findFist10NearestUsers(
+            @RequestParam Double lat,
+            @RequestParam Double lon) {
+        return new ResponseEntity<List<UserEntity>>(this.userService.findFist10NearestUsers(lat, lon), HttpStatus.OK);
     }
 
 

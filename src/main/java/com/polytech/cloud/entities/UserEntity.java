@@ -29,7 +29,7 @@ public class UserEntity {
 
     @Id
     @Column(name = "id", nullable = false, length = 255)
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    //@JsonFormat(shape = JsonFormat.Shape.STRING)
     public String getId() {
         return id;
     }
@@ -67,7 +67,7 @@ public class UserEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserEntity that = (UserEntity) o;
-        return id == that.id &&
+        return Objects.equals(id, that.id) &&
                 Objects.equals(firstName, that.firstName) &&
                 Objects.equals(lastName, that.lastName) &&
                 Objects.equals(birthDay, that.birthDay) &&
