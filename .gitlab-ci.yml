@@ -24,16 +24,18 @@ sonarqube-check:
 
 test-eval-cli:
   stage: test-eval-cli
-  image: node:12.18.1
+  image: 15.3.0-alpine3.10 // node:12.18.1
   #only:
     #- main
   before_script:
     - get clone ${repo}
     - cd ${project}
+    - npm install
   script:
     - npm test
   after_script:
     - cd ..
+    - sudo rm -rf ${project}
     #- rm -r ${project} how tho remove a file with npm??
 
 build:
