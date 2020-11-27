@@ -1,0 +1,20 @@
+type Query {
+  findAllUsers : [User]!
+}
+
+type UserEntity {
+  id: String
+  firstName: String
+  lastName: String
+  birthday: Date
+  positionByFkPosition: PositionEntity
+}
+
+type PositionEntity {
+  idPosition: int
+  lat: BigDecimal
+  lon: BigDecimal
+}
+
+
+
