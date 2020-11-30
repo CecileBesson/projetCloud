@@ -35,7 +35,7 @@ test-eval-cli3bis:
     - npm run step:3bis
   after_script:
     - cd ..
-    - rm -r ${project}
+    - rm -rf ${project}
 
 test-eval-cli2:
   stage: test-eval-cli
@@ -50,7 +50,7 @@ test-eval-cli2:
     - npm run step:2
   after_script:
     - cd ..
-    - rm -r ${project}
+    - rm -rf ${project}
 
 test-eval-cli3:
   stage: test-eval-cli
@@ -65,7 +65,7 @@ test-eval-cli3:
     - npm run step:3
   after_script:
     - cd ..
-    - rm -r ${project}
+    - rm -rf ${project}
 
 test-eval-cli1:
   stage: test-eval-cli
@@ -80,7 +80,7 @@ test-eval-cli1:
     - npm run step:1
   after_script:
     - cd ..
-    - rm -r ${project}
+    - rm -rf ${project}
 
 build:
   stage: build
