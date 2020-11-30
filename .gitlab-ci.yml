@@ -22,7 +22,7 @@ sonarqube-check:
     - master
     - develop
 
-test-eval-cli:
+test-eval-cli3bis:
   stage: test-eval-cli
   image: ubuntu:latest # node:12.18.1
   before_script:
@@ -30,10 +30,49 @@ test-eval-cli:
     - cd ${project}
     - npm install
   script:
-    - npm test
+    - npm run step:3bis
   after_script:
     - cd ..
-    - rm -rf ${project}
+    - rm -r ${project}
+
+test-eval-cli2:
+  stage: test-eval-cli
+  image: ubuntu:latest # node:12.18.1
+  before_script:
+    - git clone ${repo}
+    - cd ${project}
+    - npm install
+  script:
+    - npm run step:2
+  after_script:
+    - cd ..
+    - rm -r ${project}
+
+test-eval-cli3:
+  stage: test-eval-cli
+  image: ubuntu:latest # node:12.18.1
+  before_script:
+    - git clone ${repo}
+    - cd ${project}
+    - npm install
+  script:
+    - npm run step:3
+  after_script:
+    - cd ..
+    - rm -r ${project}
+
+test-eval-cli1:
+  stage: test-eval-cli
+  image: ubuntu:latest # node:12.18.1
+  before_script:
+    - git clone ${repo}
+    - cd ${project}
+    - npm install
+  script:
+    - npm run step:1
+  after_script:
+    - cd ..
+    - rm -r ${project}
 
 build:
   stage: build
