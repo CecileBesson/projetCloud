@@ -24,6 +24,8 @@ sonarqube-check:
 
 test-eval-cli3bis:
   stage: test-eval-cli
+  only:
+    - main
   image: ubuntu:latest # node:12.18.1
   before_script:
     - git clone ${repo}
@@ -38,6 +40,8 @@ test-eval-cli3bis:
 test-eval-cli2:
   stage: test-eval-cli
   image: ubuntu:latest # node:12.18.1
+  only:
+    - main
   before_script:
     - git clone ${repo}
     - cd ${project}
@@ -51,6 +55,8 @@ test-eval-cli2:
 test-eval-cli3:
   stage: test-eval-cli
   image: ubuntu:latest # node:12.18.1
+  only:
+    - main
   before_script:
     - git clone ${repo}
     - cd ${project}
@@ -63,6 +69,8 @@ test-eval-cli3:
 
 test-eval-cli1:
   stage: test-eval-cli
+  only:
+    - main
   image: ubuntu:latest # node:12.18.1
   before_script:
     - git clone ${repo}
