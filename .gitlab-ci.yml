@@ -33,7 +33,7 @@ test-eval-cli:
     - npm test
   after_script:
     - cd ..
-    - rm -R ${project}
+    - rm -rf ${project}
 
 build:
   stage: build
