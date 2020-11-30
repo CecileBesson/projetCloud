@@ -26,14 +26,14 @@ test-eval-cli:
   stage: test-eval-cli
   image: ubuntu:latest # node:12.18.1
   before_script:
-    - get clone ${repo}
+    - git clone ${repo}
     - cd ${project}
     - npm install
   script:
     - npm test
   after_script:
     - cd ..
-    - rm -rf ${project}
+    - rm -R ${project}
 
 build:
   stage: build
