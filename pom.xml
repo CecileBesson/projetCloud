@@ -19,6 +19,8 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<activeProfile>dev</activeProfile>
+		<sonar.projectKey>CecileBesson_projetCloud</sonar.projectKey>
+		<sonar.organization>cecilebesson</sonar.organization>
 	</properties>
 
 	<dependencies>

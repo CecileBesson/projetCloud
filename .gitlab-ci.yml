@@ -15,7 +15,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
-    - mvn verify sonar:sonar -Dsonar.qualitygate.wait=true -Dsonar.host.url=https://sonarcloud.io
+    - mvn verify sonar:sonar -Dsonar.qualitygate.wait=true # -Dsonar.host.url=https://sonarcloud.io
   allow_failure: true
   only:
     - merge_requests
