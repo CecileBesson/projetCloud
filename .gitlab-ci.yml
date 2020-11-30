@@ -24,7 +24,7 @@ sonarqube-check:
 
 test-eval-cli:
   stage: test-eval-cli
-  image: 15.3.0-alpine3.10 # node:12.18.1
+  image: ubuntu:latest # node:12.18.1
   #only:
     #- main
   before_script:
