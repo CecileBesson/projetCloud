@@ -35,6 +35,7 @@ public abstract class UserDataSamples {
 
         user1.setFirstName("'تارا");
         user1.setLastName("سلطانی ");
+        // dates should be improved
         user1.setBirthDay(new Date(1963, 8, 8));
         user1.setPositionByFkPosition(pos1);
 

@@ -4,8 +4,6 @@ import com.polytech.cloud.entities.UserEntity;
 import com.polytech.cloud.exceptions.IncorrectlyFormedUserException;
 import com.polytech.cloud.io.UsersReader;
 import org.junit.Assert;
-
-
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 @SpringBootTest
-@AutoConfigureTestDatabase
-public class UsersReaderTest {
+class UsersReaderTest {
 
     @Autowired
     UsersReader reader;
@@ -30,7 +27,7 @@ public class UsersReaderTest {
      * See https://github.com/Slashgear/cloud-random-user
      */
     @Test
-    public void getUsersEntityListFromResourceFile() throws IOException, IncorrectlyFormedUserException {
+    void getUsersEntityListFromResourceFile() throws IOException, IncorrectlyFormedUserException {
         List<UserEntity> users = reader.getUsersEntityListFromResourceFile();
         // 300 users were generated with the
         Assert.assertEquals(5000, users.size());

@@ -53,7 +53,7 @@ public class PositionEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PositionEntity that = (PositionEntity) o;
-        return idPosition == that.idPosition &&
+        return
                 Objects.equals(lat, that.lat) &&
                 Objects.equals(lon, that.lon);
     }

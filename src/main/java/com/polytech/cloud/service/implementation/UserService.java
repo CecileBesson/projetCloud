@@ -6,12 +6,14 @@ import com.polytech.cloud.io.UsersReader;
 import com.polytech.cloud.repository.*;
 import com.polytech.cloud.service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.security.InvalidParameterException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,41 +33,181 @@ public class UserService implements IUserService {
     }
 
     /**
-     * Gets all the users.
-     * @return all the users
+     * GET /user -> retourne tous les utilisateurs.
+     *
+     * @return tous les utilisateurs en BD.
      */
     @Override
-    public List<UserEntity> findAllUsers() {
+    public List<UserEntity> get() {
         return this.userRepository.findAll();
     }
 
     /**
-     * Get a user by his id.
-     * @param id the id of the user to retrieve.
-     * @return a specific user.
+     * PUT /user
+     *
+     * @param users the new list that will replace the old one.
      */
-    @Override
-    public UserEntity findByIdUser(int id) {
-        return this.userRepository.findById(id);
-    }
-
-    @Transactional
-    public void replaceAll(List<UserEntity> users) throws ReplaceAllPutException, IncorrectlyFormedUserException {
+    public void put(List<UserEntity> users) throws ReplaceAllPutException, IncorrectlyFormedUserException {
         for (UserEntity user : users) {
             this.checkIfUserIsCorrectlyFormed(user);
         }
         try {
             this.userRepository.deleteAll();
-            this.userRepository.resetAutoIncrementSeed();
             this.positionRepository.deleteAll();
-            this.positionRepository.resetAutoIncrementSeed();
             this.userRepository.saveAll(users);
         } catch (Exception e) {
             throw new ReplaceAllPutException("Could not save all the given users with PUT. : " + e.getMessage());
         }
+    }
+
+    /**
+     * DELETE /user
+     */
+    @Override
+    public void delete() throws DeleteAllException {
+        try {
+            this.userRepository.deleteAll();
+        } catch (Exception e) {
+            throw new DeleteAllException("Users could not be deleted from the database");
+        }
+    }
+
+    /**
+     * GET /user/{id}
+     *
+     * @param id id of the user that will be retrived from the DB.
+     */
+    @Override
+    public UserEntity getById(String id) throws UserToGetDoesNotExistException, StringIdExceptionForGetException {
+
+        if (this.doesUserExist(id)) {
+            return this.userRepository.findById(id);
+        } else {
+            throw new UserToGetDoesNotExistException("User does not exist into the database");
+        }
+    }
+
+    /**
+     * POST /user
+     *
+     * @param newUser the user that will be added into the DB.
+     */
+    @Override
+    public void post(UserEntity newUser) throws CreatePostException, IncorrectlyFormedUserException {
+        // check attributes validity
+        checkIfUserIsCorrectlyFormed(newUser);
+        try {
+            this.userRepository.save(newUser);
+
+        } catch (Exception e) {
+            throw new CreatePostException("Could not save given user with PUT. :" + e.getMessage());
+        }
 
     }
 
+    /**
+     * PUT /user/{id}
+     *
+     * @param userToUpdateId the id of the user that will be updated.
+     * @param updatedUser    the user with updates.
+     */
+    public void putById(String userToUpdateId, UserEntity updatedUser) throws IncorrectlyFormedUserException, ReplacePutException {
+        UserEntity userToUpdate;
+
+        try {
+            userToUpdate = this.getById("" + userToUpdateId);
+        } catch (UserToGetDoesNotExistException | StringIdExceptionForGetException e) {
+            throw new ReplacePutException("Could not update given user with POST. :" + e.getMessage());
+        }
+
+        // check attributes validity
+        checkIfUserIsCorrectlyFormed(userToUpdate);
+        try {
+            this.userRepository.save(userToUpdate);
+        } catch (Exception e) {
+            throw new ReplacePutException("Could not update given user with POST. : " + e.getMessage());
+        }
+    }
+
+    /**
+     * DELETE /user/{id}
+     *
+     * @param id the id of the user to delete.
+     */
+    @Override
+    public void deleteById(String id) throws UserToDeleteDoesNotExistException, StringIdExceptionForDelete {
+
+        if (this.doesUserExist(id)) {
+            this.userRepository.deleteById(id);
+        } else {
+            throw new UserToDeleteDoesNotExistException("User does not exist into the database");
+
+        }
+    }
+
+    @Override
+    public List<UserEntity> findByLastName(String lastName, Integer page, Integer pageSize) {
+        Pageable paging =  PageRequest.of(page, pageSize);
+        return this.userRepository.findByLastName(lastName, paging);
+    }
+
+    @Override
+    public List<UserEntity> getFirst10NearestUsers(Double lat, Double lon) {
+        return this.userRepository.findFirst10NearestUsers(lat, lon);
+    }
+
+    /**
+     * Get 100 first users corresponding to the page number
+     *
+     * @param page
+     * @param pageSize
+     * @return the users corresponding to the page number
+     */
+    public List<UserEntity> getUsers(Integer page, Integer pageSize) {
+        Pageable paging =  PageRequest.of(page, pageSize);
+        return userRepository.findAll(paging).getContent();
+    }
+
+
+    /**
+     *  Get 100 first users with age = eq
+     * @param eq
+     * @return the users with age = eq
+     * @throws UserToGetDoesNotExistException
+     */
+    public List<UserEntity> getUsersByAgeEq(Integer eq, Integer page, Integer pageSize) throws UserToGetDoesNotExistException {
+        Pageable paging =  PageRequest.of(page, pageSize);
+        return this.userRepository.findByAgeEq(eq, paging);
+    }
+
+    /**
+     *  Get 100 first users with age > gt
+     * @param gt
+     * @return the users with age > eq
+     * @throws UserToGetDoesNotExistException
+     */
+    public List<UserEntity> getUsersByAgeGt(Integer gt, Integer page, Integer pageSize) throws UserToGetDoesNotExistException {
+        Pageable paging =  PageRequest.of(page, pageSize);
+       return this.userRepository.findByAgeGt(gt,paging);
+    }
+
+    /**
+     * Inserts 5k random users into the database from the "data/data.json" resource file.
+     */
+    @Override
+    public void insertRandomUsersIntoDatabase() throws IOException, IncorrectlyFormedUserException {
+        this.userRepository.deleteAll();
+        List<UserEntity> randomUsers = this.usersReader.getUsersEntityListFromResourceFile();
+        List<PositionEntity> positions = randomUsers.stream().map(UserEntity::getPositionByFkPosition).collect(Collectors.toList());
+        this.positionRepository.saveAll(positions);
+        this.userRepository.saveAll(randomUsers);
+    }
+
+    /**
+     * Checks if rules for a given user are respected (not null, longitude, latitude, etc.)
+     *
+     * @param ue the user on which the checks will be done.
+     */
     private void checkIfUserIsCorrectlyFormed(UserEntity ue) throws IncorrectlyFormedUserException {
         if (ue == null || ue.getPositionByFkPosition() == null) {
             throw new IncorrectlyFormedUserException("Some of the users fields are null or invalid");
@@ -90,72 +232,11 @@ public class UserService implements IUserService {
         }
     }
 
-    @Override
-    public void deleteAll() throws DeleteAllException {
-        try {
-            this.userRepository.deleteAll();
-        } catch (Exception e) {
-            throw new DeleteAllException("Users could not be deleted from the database");
-        }
-    }
-
     /**
-     * Delete a user by his id.
-     * @param id the id of the user to delete.
+     * Returns true if the user does exist into the DB. False otherwise.
      */
-    @Override
-    public void deleteAUserById(int id) {
-        this.userRepository.deleteAllById(id);
-
-    }
-
-    @Override
-    public void saveAllRandomUsersToDatabase() throws IOException, IncorrectlyFormedUserException {
-        this.userRepository.deleteAll();
-        List<UserEntity> randomUsers = this.usersReader.getUsersEntityListFromResourceFile();
-        List<PositionEntity> positions = randomUsers.stream().map(UserEntity::getPositionByFkPosition).collect(Collectors.toList());
-        this.positionRepository.saveAll(positions);
-        this.userRepository.saveAll(randomUsers);
-    }
-
-    /**
-     * Creates a new user.
-     *
-     * @param newUser the user to create
-     * @throws InvalidParameterException if the attributes of the user are not correct.
-     */
-    public void createUser(UserEntity newUser) throws CreatePostException, IncorrectlyFormedUserException {
-        // check attributes validity
-        checkIfUserIsCorrectlyFormed(newUser);
-        try{
-            this.userRepository.save(newUser);
-
-        }catch(Exception e){
-            throw new CreatePostException("Could not save given user with PUT. :" + e.getMessage());
-        }
-
-    }
-
-    /**
-     * Updates a user
-     *
-     * @param userToUpdateId the id of user to update
-     * @param updatedUser    the user containing the new values
-     */
-    public void updateUser(int userToUpdateId, UserEntity updatedUser) throws IncorrectlyFormedUserException, ReplacePutException {
-        UserEntity userToUpdate = this.getUserById(userToUpdateId);
-        // check attributes validity
-        checkIfUserIsCorrectlyFormed(updatedUser);
-        try {
-            this.userRepository.save(userToUpdate);
-        } catch(Exception e){
-            throw new ReplacePutException("Could not update given user with POST. : " + e.getMessage());
-        }
-    }
-
-
-    public UserEntity getUserById(int id) {
-        return userRepository.findById(id);
+    private boolean doesUserExist(String id) {
+        return this.userRepository.findById(id) != null;
     }
 
 }

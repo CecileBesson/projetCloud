@@ -7,9 +7,4 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface PositionRepository extends JpaRepository<PositionEntity, Long> {
 
-
-    @Modifying
-    @Query(value = "ALTER TABLE position AUTO_INCREMENT = 1",
-            nativeQuery = true)
-    public void resetAutoIncrementSeed();
 }

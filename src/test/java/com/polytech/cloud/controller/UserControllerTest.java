@@ -2,6 +2,8 @@ package com.polytech.cloud.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.polytech.cloud.UserBasicDataSamples;
+import com.polytech.cloud.exceptions.StringIdExceptionForGetException;
+import com.polytech.cloud.exceptions.UserToGetDoesNotExistException;
 import com.polytech.cloud.service.implementation.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +39,7 @@ class UserControllerTest extends UserBasicDataSamples {
     @Test
     public void getTest() throws Exception {
 
-        when(userService.findAllUsers()).thenReturn(myUsers);
+        when(userService.get()).thenReturn(myUsers);
 
         ResultActions response = mvc.perform(get("/user")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -52,9 +54,12 @@ class UserControllerTest extends UserBasicDataSamples {
     @Test
     void getByIdTest() throws Exception {
 
-        when(userService.findByIdUser(1)).thenReturn(user0);
-        when(userService.findByIdUser(2)).thenReturn(user1);
-        when(userService.findByIdUser(3)).thenReturn(user2);
+        when(userService.getById("1")).thenReturn(user0);
+        when(userService.getById("2")).thenReturn(user1);
+        when(userService.getById("3")).thenReturn(user2);
+        when(userService.getById("15532")).thenThrow(UserToGetDoesNotExistException.class);
+        when(userService.getById("willCauseBadRequestError")).thenThrow(StringIdExceptionForGetException.class);
+
 
         mvc.perform(get("/user/1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -68,14 +73,14 @@ class UserControllerTest extends UserBasicDataSamples {
 
         mvc.perform(get("/user/willCauseBadRequestError")
                 .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
+                    .andExpect(status().is(HttpStatus.NOT_FOUND.value()));
 
         System.out.println("✔ GET /user/{id}");
     }
 
     @Test
     void putTest() throws Exception {
-        doNothing().when(userService).replaceAll(myUsers);
+        doNothing().when(userService).put(myUsers);
 
         mvc.perform(put("/user")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -92,7 +97,7 @@ class UserControllerTest extends UserBasicDataSamples {
 
     @Test
     void putByIdTest() throws Exception {
-        doNothing().when(userService).updateUser(1, user0);
+        doNothing().when(userService).putById("1", user0);
 
         mvc.perform(put("/user/dazssefqs466009--zefze&")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -103,7 +108,7 @@ class UserControllerTest extends UserBasicDataSamples {
                 .content(mapper.writeValueAsString(user0)))
                 .andExpect(status().isOk());
 
-        when(this.userService.findByIdUser(1)).thenReturn(this.user0);
+        when(this.userService.getById("1")).thenReturn(this.user0);
 
 
         mvc.perform(put("/user/1")
@@ -115,15 +120,23 @@ class UserControllerTest extends UserBasicDataSamples {
     }
 
     @Test
-    void deleteTest(){
-        //todo
+    void deleteTest() throws Exception {
+
+        mvc.perform(delete("/user/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
         System.out.println("✔ DELETE /user");
     }
 
     @Test
-    void deleteByIdTest(){
-        //todo
+    void deleteByIdTest() throws Exception {
+
+        mvc.perform(delete("/user/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
         System.out.println("✔ DELETE /user/{id}");
     }
@@ -135,8 +148,81 @@ class UserControllerTest extends UserBasicDataSamples {
         System.out.println("✔ POST /user");
     }
 
+    @Test
+    void getUsersByNameTest() throws Exception {
+
+        when(userService.findByLastName("Na", 0, 100)).thenReturn(myOtherUsers);
+
+        mvc.perform(get("/user/search?term=Na")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].lastName").value(user4.getLastName()))
+                .andExpect(jsonPath("$[1].lastName").value(user5.getLastName()))
+                .andExpect(jsonPath("$[2].lastName").value(user6.getLastName()));
+
+        System.out.println("✔ GET /user/search?term={}");
+    }
+
+    @Test
+    void getFirst10NearestUsersTest() throws Exception {
+
+        when(userService.getFirst10NearestUsers(78.2, 56.8)).thenReturn(myOtherUsers);
+
+        mvc.perform(get("/user/nearest?lat=78.2&lon=56.8")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].position.lat").value(user4.getPositionByFkPosition().getLat()))
+                .andExpect(jsonPath("$[0].position.lon").value(user4.getPositionByFkPosition().getLon()))
+                .andExpect(jsonPath("$[1].position.lat").value(user5.getPositionByFkPosition().getLat()))
+                .andExpect(jsonPath("$[1].position.lon").value(user5.getPositionByFkPosition().getLon()))
+                .andExpect(jsonPath("$[2].position.lat").value(user6.getPositionByFkPosition().getLat()))
+                .andExpect(jsonPath("$[2].position.lon").value(user6.getPositionByFkPosition().getLon()));
+
+        System.out.println("✔ GET /user/nearest?lat={}&lon={}");
+
+    }
+
+    @Test
+    void getUserByPageSizeTest() throws Exception {
+        when(userService.getUsers(1, 2)).thenReturn(myUsers);
+        mvc.perform(get("/user?page=1&pageSize=2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[2].firstName").value(user2.getFirstName()))
+                .andExpect(jsonPath("$[3].firstName").value(user3.getFirstName()));
+
+        System.out.println("✔ GET /user?page={}&pageSize={}");
+    }
 
 
-
+    @Test
+    void getUserByPageTest() throws Exception {
+        when(userService.getUsers(1, 2)).thenReturn(myUserPage);
+        mvc.perform(get("/user?page=1&pageSize=2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(user11.getId()));
+        System.out.println("✔ GET /user?page={}&pageSize={}");
+    }
+    @Test
+    void getUsersByAgeEqTest() throws Exception {
+        when(userService.getUsersByAgeEq(20, 1, 2)).thenReturn(myUserPage1Eq20);
+        mvc.perform(get("/user/age?eq=20&page=1&pageSize=2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(user9.getId()))
+                .andExpect(jsonPath("$[1].id").value(user10.getId()));
+        System.out.println("✔ GET /user/age?eq={}&page={}&pageSize={}");
+    }
+    @Test
+    void getUsersByAgeGtTest() throws Exception {
+        when(userService.getUsersByAgeGt(20, 1, 2)).thenReturn(myUserPage1Gt20);
+        mvc.perform(get("/user/age?gt=20&page=1&pageSize=2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(user7.getId()))
+                .andExpect(jsonPath("$[1].id").value(user8.getId()));
+        System.out.println("✔ GET /user/age?eq={}&page={}&pageSize={}");
+    }
 
 }
