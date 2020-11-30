@@ -15,7 +15,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
-    - mvn verify sonar:sonar -Dsonar.qualitygate.wait=true
+    - mvn verify sonar:sonar -Dsonar.qualitygate.wait=true -Dsonar.host.url=https://sonarcloud.io
   allow_failure: true
   only:
     - merge_requests
@@ -24,7 +24,7 @@ sonarqube-check:
 
 test-eval-cli:
   stage: test-eval-cli
-  image: 15.3.0-alpine3.10 // node:12.18.1
+  image: 15.3.0-alpine3.10 # node:12.18.1
   #only:
     #- main
   before_script:
